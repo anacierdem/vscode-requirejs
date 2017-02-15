@@ -1,9 +1,10 @@
 {
     "name": "require-js",
-    "displayName": "require-js",
-    "description": "",
-    "version": "0.0.1",
+    "displayName": "Require Module Support",
+    "description": "Adds require.js module goto definition support.",
+    "version": "0.0.4",
     "publisher": "lici",
+    "icon": "logo.png",
     "engines": {
         "vscode": "^1.5.0"
     },
