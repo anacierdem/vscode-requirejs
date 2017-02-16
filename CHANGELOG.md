@@ -1,7 +1,9 @@
 # Change Log
-All notable changes to the "require-js" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.0.8] - 2017-16-02
+### Added
+- Better instantiation support.
 
-## [Unreleased]
-- Initial release
+## [0.0.9] - 2017-16-02
+### Changed
+- Fixed a bug when a module dependency is used without being defined in function arguments.

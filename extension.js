@@ -45,20 +45,19 @@ function activate(context) {
                     if (m) {
                         var newPosition = document.positionAt(m.index + m[0].indexOf(m[1]));
                         
-                        var range = document.getWordRangeAtPosition(newPosition);
+                        //var range = document.getWordRangeAtPosition(newPosition);
+                        var line = document.lineAt(newPosition);
 
-                        if(range) {
-                            var word = document.getText(range);
-                            if(word == "new") {
-                                newPosition = document.positionAt(document.offsetAt(newPosition) + 4);
-                                range = document.getWordRangeAtPosition(newPosition);
-                                word = document.getText(range);
-                                references.push(new vscode.Location(document.uri, range));
-                                console.log(word);
-                            } else if(word != "null"){
-                                references.push(new vscode.Location(document.uri, range));
-                                console.log(word);
-                            }
+                        var findNew = new RegExp("new\\s*(\\w*)", "g");
+                        var found = findNew.exec(line.text);
+
+                        if(found) {
+                            
+                            newPosition = new vscode.Position(newPosition._line, found.index + found[0].length);
+                            range = document.getWordRangeAtPosition(newPosition);
+                            word = document.getText(range);
+                            references.push(new vscode.Location(document.uri, range));
+                            
                         }
 
                     }
@@ -76,7 +75,7 @@ function activate(context) {
                 var moduleName = currentList[word];
 
                 if(moduleName) {
-                    var newPath = document.uri._formatted;
+                    var newPath = vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath") || document.uri._formatted;
                     var split = newPath.split("/");
                     newPath = split.splice(0, split.length - 1).join("/");
 
@@ -139,12 +138,17 @@ function activate(context) {
 
                         if(results.length && !propertyParent) {
                             continueFrom = results[0].range._start;
+                            if(document.getText(document.getWordRangeAtPosition(continueFrom)) == word) {
+                                resolve(undefined);
+                                return;
+                            }
                         } else {
                             if(propertyParent) {
                                 continueFrom = propertyParentPosition;
                                 parentWord = word;
                             } else {
                                 resolve(undefined);
+                                return;
                             }
                         }
 

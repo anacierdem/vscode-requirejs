@@ -2,7 +2,7 @@
     "name": "require-js",
     "displayName": "Require Module Support",
     "description": "Adds require.js module goto definition support.",
-    "version": "0.0.4",
+    "version": "0.0.9",
     "publisher": "lici",
     "icon": "logo.png",
     "engines": {
@@ -16,10 +16,17 @@
     ],
     "main": "./extension",
     "contributes": {
-        "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }]
+        "configuration": {
+            "type": "object",
+            "title": "Require Module Support",
+            "properties": {
+                "requireModuleSupport.modulePath": {
+                    "type": "string",
+                    "default": "",
+                    "description": ""
+                }
+            }
+        }
     },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
