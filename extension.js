@@ -10,27 +10,37 @@ function activate(context) {
         var parentWord;
         this.provideDefinition = function(document, position) {
             var currentList;
-            var define = function(list, func)
+            var result;
+            var parseRequireDefine = function(str)
             {
                 var list, func;
-                if(Array.isArray(arguments[0])) {
-                    //Not using a module name
-                    list = arguments[0];
-                    func = arguments[1];
-                } else {
-                    list = arguments[1];
-                    func = arguments[2];
+                var array = new RegExp("\\[.*\\]", "ig");
+                var params = new RegExp("function\\s*\\(.*", "ig");
+
+                var singleName = str.split("\"").join("'").split("'")[0];
+                if(singleName) {
+                    var tmpSplit = singleName.split("\\").join('/').split('/');
+                    list = [singleName]
+                    result = [tmpSplit[tmpSplit.length-1]];
                 }
 
-                var ARGUMENT_NAMES = /([^\s,]+)/g;
 
-                var fnStr = func.toString().replace(STRIP_COMMENTS, '');
-                var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
-                if(result === null)
-                    result = [];
+                var m = array.exec(str);
+
+                if(m) {
+                    list = JSON.parse(m[0].split("'").join("\""));
+                } 
+                
+                m = params.exec(str);
+
+                if(m) {
+                    var test = /([^\s,]+)/g;
+                    result = m[0].slice(m[0].indexOf('(')+1).match(test);
+                } 
 
                 currentList = {}
 
+                if(result)
                 result.forEach(function(value, index) {
                     currentList[value] = list[index];
                 });
@@ -46,8 +56,7 @@ function activate(context) {
                     m = test.exec(fullText);
                     if (m) {
                         var newPosition = document.positionAt(m.index + m[0].indexOf(m[1]));
-                        
-                        //var range = document.getWordRangeAtPosition(newPosition);
+
                         var line = document.lineAt(newPosition);
 
                         var findNew = new RegExp("new\\s*(\\w*)", "g");
@@ -67,23 +76,61 @@ function activate(context) {
                 return references;
             }.bind(this);
 
+            var finalSearch = function(modulePath, searchFor, searchingForModule) {
+                var split = modulePath.split("/");
+                var moduleName = split[split.length-1];
+
+                var newPath = vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath") || document.uri._formatted;
+                var split = newPath.split("/");
+                newPath = split.splice(0, split.length - 1).join("/");
+
+                var newUri = vscode.Uri.parse(newPath + "/" + modulePath + ".js");
+                var newDocument = vscode.workspace.openTextDocument(newUri);
+
+                return new Promise(resolve => {
+                    newDocument.then(function(doc) {
+                        var newFullText = doc.getText()
+                        var test = new RegExp("(\\b" + searchFor + "\\b)", "g");
+                        var m;
+
+                        do {
+                            m = test.exec(newFullText);
+
+                            if (m) {
+                                var newPosition = doc.positionAt(m.index);
+                                
+                                if(searchingForModule) {
+                                    resolve( new vscode.Location(newUri, newPosition) );
+                                } else {
+                                    vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
+                                        if(refs.length > 0) {
+                                            resolve( refs );
+                                        }
+                                    });
+                                }
+                            }
+                        } while (m);
+                    });
+                });
+            }
+
             var fullText = document.getText();
             var range = document.getWordRangeAtPosition(position);
 
             if(range) {
                 var word = document.getText(range);
 
-                eval(fullText);
-                var moduleName = currentList[word];
+                var params = new RegExp("(define|require)\\s*\\(([^)]*)", "ig");
 
-                if(moduleName) {
-                    var newPath = vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath") || document.uri._formatted;
-                    var split = newPath.split("/");
-                    newPath = split.splice(0, split.length - 1).join("/");
+                var noComment = fullText.toString().replace(STRIP_COMMENTS, '');
+                var tmpResult = params.exec(noComment);
 
-                    var newUri = vscode.Uri.parse(newPath + "/" + moduleName + ".js");
-                    var newDocument = vscode.workspace.openTextDocument(newUri);
+                parseRequireDefine(tmpResult[2]);
 
+                var modulePath;
+                modulePath = currentList[word];
+
+                if(modulePath) {
                     var searchFor = "";
                     var searchingForModule = false;
                     if(parentWord != "") {
@@ -94,32 +141,7 @@ function activate(context) {
                         searchingForModule = true;
                     }
 
-                    return new Promise(resolve => {
-                        newDocument.then(function(doc) {
-                            var newFullText = doc.getText()
-                            var test = new RegExp("(\\b" + searchFor + "\\b)", "g");
-                            var m;
- 
-                            do {
-                                m = test.exec(newFullText);
-
-                                if (m) {
-                                    var newPosition = doc.positionAt(m.index);
-                                    
-                                    if(searchingForModule) {
-                                        resolve( new vscode.Location(newUri, newPosition) );
-                                    } else {
-                                        vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
-                                            if(refs.length > 0) {
-                                                resolve( refs );
-                                            }
-                                        });
-                                    }
-                                }
-                            } while (m);
-                        });
-                    });
-
+                    return finalSearch(modulePath, searchFor, searchingForModule);
                 } else {
                     return new Promise(resolve => {
 
@@ -146,8 +168,21 @@ function activate(context) {
                             }
                         } else {
                             if(propertyParent) {
-                                continueFrom = propertyParentPosition;
-                                parentWord = word;
+                                var char = document.getText(new vscode.Range(
+                                                    new vscode.Position(propertyParentPosition._line, propertyParentPosition._character-1),
+                                                    propertyParentPosition
+                                                    ));
+                                if(char == ")") {
+                                    var line = document.lineAt(propertyParentPosition._line).text
+                                    var path = /['"]([^'"]*)/gi.exec(line);
+                                    
+                                    finalSearch(path[1], word, true).then(function(refs) {
+                                        resolve(refs );
+                                    });
+                                } else {
+                                    continueFrom = propertyParentPosition;
+                                    parentWord = word;
+                                }
                             } else {
                                 resolve(undefined);
                                 return;
