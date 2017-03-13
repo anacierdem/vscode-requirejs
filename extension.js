@@ -10,8 +10,18 @@ function activate(context) {
         var parentWord;
         this.provideDefinition = function(document, position) {
             var currentList;
-            var define = function(name, list, func)
+            var define = function(list, func)
             {
+                var list, func;
+                if(Array.isArray(arguments[0])) {
+                    //Not using a module name
+                    list = arguments[0];
+                    func = arguments[1];
+                } else {
+                    list = arguments[1];
+                    func = arguments[2];
+                }
+
                 var ARGUMENT_NAMES = /([^\s,]+)/g;
 
                 var fnStr = func.toString().replace(STRIP_COMMENTS, '');
