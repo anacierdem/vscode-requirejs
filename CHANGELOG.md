@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.0.14] - 2017-13-03
+
+- Removed code eval. 
+- Added support for directly used require statements such as require('...').use()
+- Added support for modules not having a name.
+
 ## [0.0.11] - 2017-28-02
 ### Changed
 - Added repository field & reference to github.
