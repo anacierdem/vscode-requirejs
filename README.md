@@ -8,9 +8,9 @@ You can set module path relative to workspace root with "requireModuleSupport.mo
 
 Example for a Windows based system;
 
-{
-    "requireModuleSupport.modulePath": "modules"
-}
+    {
+        "requireModuleSupport.modulePath": "modules"
+    }
 
 This will translate to [WORKSPACE_ROOT]\modules
 
