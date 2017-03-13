@@ -186,16 +186,18 @@ function activate(context) {
                             }
                         }
 
-                        vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(function(refs) {
-                            
-                            for(var i = refs.length-1; i >= 0; i--) {
-                                //Discard if same file
-                                if(refs[i].uri._path == document.uri._path) {
-                                    refs.splice(i, 1);
+                        if(continueFrom)
+                            vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(function(refs) {
+                                
+                                for(var i = refs.length-1; i >= 0; i--) {
+                                    //Discard if same file
+                                    if(refs[i].uri._path == document.uri._path) {
+                                        refs.splice(i, 1);
+                                    }
                                 }
-                            }
-                            resolve(refs );
-                        });
+                                resolve(refs );
+                            });
+                        else resolve(undefined);
                         
                     })
                 }
