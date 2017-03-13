@@ -78,13 +78,10 @@ function activate(context) {
 
             var finalSearch = function(modulePath, searchFor, searchingForModule) {
                 var split = modulePath.split("/");
-                var moduleName = split[split.length-1];
 
-                var newPath = vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath") || document.uri._formatted;
-                var split = newPath.split("/");
-                newPath = split.splice(0, split.length - 1).join("/");
+                var baseUri = vscode.workspace.rootPath + "/" + vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath");
 
-                var newUri = vscode.Uri.parse(newPath + "/" + modulePath + ".js");
+                var newUri = vscode.Uri.file(baseUri + "/" + modulePath + ".js");
                 var newDocument = vscode.workspace.openTextDocument(newUri);
 
                 return new Promise(resolve => {
@@ -139,7 +136,7 @@ function activate(context) {
                         searchFor = parentWord;
                         parentWord = "";
                     } else {
-                        searchFor = moduleName;
+                        searchFor = word;
                         searchingForModule = true;
                     }
 

@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.0.17] - 2017-13-03
+### Changed
+
+- Module path is now set relative to workspace root with "requireModuleSupport.modulePath" without leading and trailing slashes. This also fixed OS path separator related issues.
+
 ## [0.0.16] - 2017-13-03
 ### Changed
 - User is warned when there is not a found definition.

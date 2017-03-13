@@ -4,7 +4,18 @@
 
 Provides goto definition functionality for require js modules.
 
-You can set module path with "requireModuleSupport.modulePath". It will default to loading file's path if not given.
+You can set module path relative to workspace root with "requireModuleSupport.modulePath" without leading and trailing slashes.
+
+Example for a Windows based system;
+
+{
+    "requireModuleSupport.modulePath": "modules"
+}
+
+This will translate to [WORKSPACE_ROOT]\modules
+
+It will default to workspace root path if not given.
+
 
 ## Support
 
