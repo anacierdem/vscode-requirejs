@@ -105,6 +105,8 @@ function activate(context) {
                                     vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
                                         if(refs.length > 0) {
                                             resolve( refs );
+                                        } else {
+                                            resolve( undefined )
                                         }
                                     });
                                 }
@@ -164,7 +166,6 @@ function activate(context) {
                             continueFrom = results[0].range._start;
                             if(document.getText(document.getWordRangeAtPosition(continueFrom)) == word) {
                                 resolve(undefined);
-                                return;
                             }
                         } else {
                             if(propertyParent) {
@@ -185,7 +186,6 @@ function activate(context) {
                                 }
                             } else {
                                 resolve(undefined);
-                                return;
                             }
                         }
 

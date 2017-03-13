@@ -1,19 +1,28 @@
 # Change Log
 
+## [0.0.16] - 2017-13-03
+### Changed
+- User is warned when there is not a found definition.
+
 ## [0.0.15] - 2017-13-03
+### Changed
 
 - Removed code eval. 
+- Fixed multiline module name / function argument list problem.
+
+### Added
 - Added support for directly used require statements such as require('...').use()
 - Added support for modules not having a name.
-- Fixed multiline module name / function argument list problem.
 
 ## [0.0.11] - 2017-28-02
 ### Changed
+
 - Added repository field & reference to github.
 - Activate extension only for js files.
 
 ## [0.0.10] - 2017-17-02
 ### Changed
+
 - Changed description.
 
 ## [0.0.9] - 2017-16-02
