@@ -14,8 +14,8 @@ function activate(context) {
             var parseRequireDefine = function(str)
             {
                 var list, func;
-                var array = new RegExp("\\[.*\\]", "ig");
-                var params = new RegExp("function\\s*\\(.*", "ig");
+                var array = new RegExp("\\[[^\\]]*\\]", "ig");
+                var params = new RegExp("function\\s*\\([^)]*", "ig");
 
                 var singleName = str.split("\"").join("'").split("'")[0];
                 if(singleName) {
