@@ -14,8 +14,8 @@ function activate(context) {
             var parseRequireDefine = function(str)
             {
                 var list, func;
-                var array = new RegExp("\\[[^\\]]*\\]", "ig");
-                var params = new RegExp("function\\s*\\([^)]*", "ig");
+                var array = /\[[^\]]*\]/gi;
+                var params = /function\s*\([^)]*/gi;
 
                 var singleName = str.split("\"").join("'").split("'")[0];
                 if(singleName) {
@@ -23,7 +23,6 @@ function activate(context) {
                     list = [singleName]
                     result = [tmpSplit[tmpSplit.length-1]];
                 }
-
 
                 var m = array.exec(str);
 
@@ -47,7 +46,7 @@ function activate(context) {
             }
 
             var findConstructor = function(word) {
-                var test = new RegExp("(?:"+word+"\\s*=\\s*)([^\\s]*)", "ig");
+                var test = new RegExp("(?:"+word+"\\s*=\\s*(?:new)?\\s*)([^\\s(;]*)", "ig");
                 var m;
 
                 var references = [];
@@ -57,20 +56,9 @@ function activate(context) {
                     if (m) {
                         var newPosition = document.positionAt(m.index + m[0].indexOf(m[1]));
 
-                        var line = document.lineAt(newPosition);
-
-                        var findNew = new RegExp("new\\s*(\\w*)", "g");
-                        var found = findNew.exec(line.text);
-
-                        if(found) {
-                            
-                            newPosition = new vscode.Position(newPosition._line, found.index + found[0].length);
-                            range = document.getWordRangeAtPosition(newPosition);
-                            word = document.getText(range);
+                        range = document.getWordRangeAtPosition(newPosition);
+                        if(range)
                             references.push(new vscode.Location(document.uri, range));
-                            
-                        }
-
                     }
                 } while (m);
                 return references;
@@ -96,17 +84,21 @@ function activate(context) {
                             if (m) {
                                 var newPosition = doc.positionAt(m.index);
                                 
-                                if(searchingForModule) {
-                                    resolve( new vscode.Location(newUri, newPosition) );
-                                } else {
-                                    vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
-                                        if(refs.length > 0) {
-                                            resolve( refs );
-                                        } else {
-                                            resolve( undefined )
-                                        }
-                                    });
-                                }
+                                var simpleComment = /^\s*\*/gm;
+
+                                if(!simpleComment.test(doc.lineAt(newPosition._line).text)) {
+                                    if(searchingForModule) {
+                                        resolve( new vscode.Location(newUri, newPosition) );
+                                    } else {
+                                        vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
+                                            if(refs.length > 0) {
+                                                resolve( refs );
+                                            } else {
+                                                resolve( undefined )
+                                            }
+                                        });
+                                    }
+                                } 
                             }
                         } while (m);
                     });
@@ -119,7 +111,7 @@ function activate(context) {
             if(range) {
                 var word = document.getText(range);
 
-                var params = new RegExp("(define|require)\\s*\\(([^)]*)", "ig");
+                var params = /(define|require)\s*\(([^)]*)/gi;
 
                 var noComment = fullText.toString().replace(STRIP_COMMENTS, '');
                 var tmpResult = params.exec(noComment);
@@ -160,9 +152,10 @@ function activate(context) {
                         }
 
                         if(results.length && !propertyParent) {
-                            continueFrom = results[0].range._start;
-                            if(document.getText(document.getWordRangeAtPosition(continueFrom)) == word) {
+                            if(document.getText(document.getWordRangeAtPosition(results[0].range._start)) == word) {
                                 resolve(undefined);
+                            } else {
+                                continueFrom = results[0].range._start;
                             }
                         } else {
                             if(propertyParent) {
@@ -170,12 +163,14 @@ function activate(context) {
                                                     new vscode.Position(propertyParentPosition._line, propertyParentPosition._character-1),
                                                     propertyParentPosition
                                                     ));
+
+                                //immediately invoked
                                 if(char == ")") {
                                     var line = document.lineAt(propertyParentPosition._line).text
                                     var path = /['"]([^'"]*)/gi.exec(line);
                                     
                                     finalSearch(path[1], word, true).then(function(refs) {
-                                        resolve(refs );
+                                        resolve([refs]);
                                     });
                                 } else {
                                     continueFrom = propertyParentPosition;
@@ -186,7 +181,7 @@ function activate(context) {
                             }
                         }
 
-                        if(continueFrom)
+                        if(continueFrom) {
                             vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(function(refs) {
                                 
                                 for(var i = refs.length-1; i >= 0; i--) {
@@ -197,8 +192,7 @@ function activate(context) {
                                 }
                                 resolve(refs );
                             });
-                        else resolve(undefined);
-                        
+                        }
                     })
                 }
             } else {

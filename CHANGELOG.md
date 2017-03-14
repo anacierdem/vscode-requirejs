@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.0.19] - 2017-14-03
+### Changed
+
+- Imported module does not have to be used with new keyword anymore.
+- Simple comments does not interfere with definition navigation.
+- Fixed a problem causing navigation error in some cases. 
+
 ## [0.0.18] - 2017-13-03
 ### Changed
 
