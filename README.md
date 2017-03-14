@@ -49,7 +49,7 @@ It will default to workspace root path if not given.
 
 Another option is 
 
-"requireModuleSupport.onlyNavigateToFile"
+    "requireModuleSupport.onlyNavigateToFile"
 
 When set to true, it will prevent the final search in the landing module and instead just reference the file. When this feature is left as false, the constructor or property that the goto definition operation has started with will be searched in the module file.
 
