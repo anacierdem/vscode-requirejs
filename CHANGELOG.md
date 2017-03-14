@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.0.21] - 2017-14-03
+### Changed
+
+- Can navigate to modules via strings in module name list.
+
 ## [0.0.20] - 2017-14-03
 ### Changed
 

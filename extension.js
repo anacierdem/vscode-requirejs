@@ -17,12 +17,12 @@ function activate(context) {
                 var array = /\[[^\]]*\]/gi;
                 var params = /function\s*\([^)]*/gi;
 
-                var singleName = str.split("\"").join("'").split("'")[0];
-                if(singleName) {
-                    var tmpSplit = singleName.split("\\").join('/').split('/');
-                    list = [singleName]
-                    result = [tmpSplit[tmpSplit.length-1]];
-                }
+                // var isSingle = str.indexOf('[')<0 && str.indexOf('(')<0;
+                // if(isSingle) {
+                //     var tmpName = str.split("'").join('');
+                //     list = [tmpName]
+                //     result = [tmpName];
+                // }
 
                 var m = array.exec(str);
 
@@ -65,8 +65,6 @@ function activate(context) {
             }.bind(this);
 
             var searchModule = function(modulePath, searchFor, stopSearchingFurther) {
-                var split = modulePath.split("/");
-
                 var baseUri = vscode.workspace.rootPath + "/" + vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath");
 
                 var newUri = vscode.Uri.file(baseUri + "/" + modulePath + ".js");
@@ -155,16 +153,38 @@ function activate(context) {
                         var continueFrom;
                         var results = findConstructor(word);
 
-                        var dot = document.getText( new vscode.Range(
+                        var before = document.getText( new vscode.Range(
                                                     new vscode.Position(range._start._line, range._start._character-1),
                                                     new vscode.Position(range._start._line, range._start._character)
                                                     ));
 
                         var allDefinitions = [];
+                        var tmpModuleName;
 
-                        if(dot == ".") {
+                        if(before == ".") {
                             var propertyParentPosition = new vscode.Position(range._start._line, range._start._character-1);
                             var propertyParent = document.getText(document.getWordRangeAtPosition(propertyParentPosition));
+                        } else {
+                            //TODO: separate as string finder
+                            var char;
+                            var startOffset = 0;
+                            while(char = document.getText( new vscode.Range(
+                                        new vscode.Position(range._start._line, range._start._character-startOffset-1),
+                                        new vscode.Position(range._start._line, range._start._character-startOffset)
+                                    )), char != "'" && char != "\"" && range._start._character-startOffset-1 >= 1) {
+                                startOffset++;
+                            }
+                            var endOffset = 0;
+                            while(char = document.getText( new vscode.Range(
+                                        new vscode.Position(range._start._line, range._start._character+endOffset),
+                                        new vscode.Position(range._start._line, range._start._character+endOffset+1)
+                                    )), char != "'" && char != "\"") {
+                                endOffset++;
+                            }
+                            tmpModuleName = document.getText( new vscode.Range(
+                                        new vscode.Position(range._start._line, range._start._character-startOffset),
+                                        new vscode.Position(range._start._line, range._start._character+endOffset)
+                                    ))
                         }
 
                         if(results.length && !propertyParent) {
@@ -195,7 +215,14 @@ function activate(context) {
                                     parentWord = word;
                                 }
                             } else {
-                                resolve(undefined);
+                                if(tmpModuleName) {
+                                    searchModule(tmpModuleName, "", true).then(function(refs) {
+                                        resolve([refs]);
+                                        return;
+                                    });
+                                } else {
+                                    resolve(undefined);
+                                }
                                 return;
                             }
                         }
