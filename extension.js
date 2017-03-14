@@ -7,7 +7,7 @@ function activate(context) {
     var referenceProvider  = function() {
         var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 
-        var parentWord;
+        var parentWord = "";
         this.provideDefinition = function(document, position) {
             var currentList;
             var result;
@@ -56,7 +56,7 @@ function activate(context) {
                     if (m) {
                         var newPosition = document.positionAt(m.index + m[0].indexOf(m[1]));
 
-                        range = document.getWordRangeAtPosition(newPosition);
+                        var range = document.getWordRangeAtPosition(newPosition);
                         if(range)
                             references.push(new vscode.Location(document.uri, range));
                     }
@@ -64,7 +64,7 @@ function activate(context) {
                 return references;
             }.bind(this);
 
-            var finalSearch = function(modulePath, searchFor, searchingForModule) {
+            var searchModule = function(modulePath, searchFor, stopSearchingFurther) {
                 var split = modulePath.split("/");
 
                 var baseUri = vscode.workspace.rootPath + "/" + vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath");
@@ -77,30 +77,44 @@ function activate(context) {
                         var newFullText = doc.getText()
                         var test = new RegExp("(\\b" + searchFor + "\\b)", "g");
                         var m;
+                        var found = false;
 
+                        var onlyNavigateToFile = vscode.workspace.getConfiguration("requireModuleSupport").get("onlyNavigateToFile");
+
+                        if(!onlyNavigateToFile)
                         do {
                             m = test.exec(newFullText);
 
                             if (m) {
+                                found = true;
                                 var newPosition = doc.positionAt(m.index);
                                 
                                 var simpleComment = /^\s*\*/gm;
 
                                 if(!simpleComment.test(doc.lineAt(newPosition._line).text)) {
-                                    if(searchingForModule) {
+                                    if(stopSearchingFurther) {
                                         resolve( new vscode.Location(newUri, newPosition) );
+                                        return;
                                     } else {
                                         vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
                                             if(refs.length > 0) {
                                                 resolve( refs );
+                                                return;
                                             } else {
                                                 resolve( undefined )
+                                                return;
                                             }
                                         });
+                                        return;
                                     }
                                 } 
-                            }
+                            } 
                         } while (m);
+
+                        if(!found || onlyNavigateToFile) {
+                            resolve( new vscode.Location(newUri, new vscode.Position(0, 0) ));
+                            return;
+                        }
                     });
                 });
             }
@@ -123,16 +137,18 @@ function activate(context) {
 
                 if(modulePath) {
                     var searchFor = "";
-                    var searchingForModule = false;
+                    var stopSearchingFurther;
+
                     if(parentWord != "") {
                         searchFor = parentWord;
-                        parentWord = "";
+                        stopSearchingFurther = false;
                     } else {
                         searchFor = word;
-                        searchingForModule = true;
+                        stopSearchingFurther = true;
                     }
+                    parentWord = "";
 
-                    return finalSearch(modulePath, searchFor, searchingForModule);
+                    return searchModule(modulePath, searchFor, stopSearchingFurther);
                 } else {
                     return new Promise(resolve => {
 
@@ -154,6 +170,7 @@ function activate(context) {
                         if(results.length && !propertyParent) {
                             if(document.getText(document.getWordRangeAtPosition(results[0].range._start)) == word) {
                                 resolve(undefined);
+                                return;
                             } else {
                                 continueFrom = results[0].range._start;
                             }
@@ -169,8 +186,9 @@ function activate(context) {
                                     var line = document.lineAt(propertyParentPosition._line).text
                                     var path = /['"]([^'"]*)/gi.exec(line);
                                     
-                                    finalSearch(path[1], word, true).then(function(refs) {
+                                    searchModule(path[1], word, true).then(function(refs) {
                                         resolve([refs]);
+                                        return;
                                     });
                                 } else {
                                     continueFrom = propertyParentPosition;
@@ -178,6 +196,7 @@ function activate(context) {
                                 }
                             } else {
                                 resolve(undefined);
+                                return;
                             }
                         }
 
@@ -191,6 +210,7 @@ function activate(context) {
                                     }
                                 }
                                 resolve(refs );
+                                return;
                             });
                         }
                     })

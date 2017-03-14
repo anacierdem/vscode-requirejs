@@ -2,7 +2,7 @@
     "name": "require-js",
     "displayName": "Require Module Support",
     "description": "Adds require.js AMD module goto definition support.",
-    "version": "0.0.19",
+    "version": "0.0.20",
     "publisher": "lici",
     "icon": "logo.png",
     "engines": {
@@ -23,7 +23,12 @@
                 "requireModuleSupport.modulePath": {
                     "type": "string",
                     "default": "",
-                    "description": ""
+                    "description": "Module path relative to workspace root"
+                },
+                "requireModuleSupport.onlyNavigateToFile": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Should we search inside the landing file?"
                 }
             }
         }
