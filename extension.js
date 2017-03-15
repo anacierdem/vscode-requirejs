@@ -17,13 +17,6 @@ function activate(context) {
                 var array = /\[[^\]]*\]/gi;
                 var params = /function\s*\([^)]*/gi;
 
-                // var isSingle = str.indexOf('[')<0 && str.indexOf('(')<0;
-                // if(isSingle) {
-                //     var tmpName = str.split("'").join('');
-                //     list = [tmpName]
-                //     result = [tmpName];
-                // }
-
                 var m = array.exec(str);
 
                 if(m) {

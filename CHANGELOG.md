@@ -1,5 +1,11 @@
 # Change Log
 
+
+## [0.0.23] - 2017-15-03
+### Changed
+
+- Changed logo for larger display.
+
 ## [0.0.21] - 2017-14-03
 ### Changed
 
