@@ -1,10 +1,11 @@
 # Change Log
 
-## [0.0.27] - 2017-20-03
+## [0.0.28] - 2017-20-03
 ### Changed
 
 - Fixed 100% CPU usage problem.
 - Resolved a console error.
+- Fixed bugs preventing the last search on target module.
 
 ## [0.0.23] - 2017-15-03
 ### Changed

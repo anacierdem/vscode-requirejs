@@ -92,7 +92,7 @@ function activate(context) {
                                                 resolve( refs );
                                                 return;
                                             } else {
-                                                resolve( undefined )
+                                                resolve( new vscode.Location(newUri, newPosition) )
                                                 return;
                                             }
                                         });
@@ -207,7 +207,14 @@ function activate(context) {
                                     parentWord = word;
                                 }
                             } else {
-                                if(tmpModuleName && tmpModuleName in currentList) {
+                                var isModule = false;
+                                for(var key in currentList) {
+                                    if(currentList[key] == tmpModuleName) {
+                                        isModule = true;
+                                    }
+                                }
+
+                                if(isModule) {
                                     searchModule(tmpModuleName, "", true).then(function(refs) {
                                         resolve([refs]);
                                         return;
