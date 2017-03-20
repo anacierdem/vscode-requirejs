@@ -129,7 +129,7 @@ function activate(context) {
                 if(modulePath) {
                     var searchFor = "";
                     var stopSearchingFurther;
-
+1
                     if(parentWord != "") {
                         searchFor = parentWord;
                         stopSearchingFurther = false;
@@ -160,22 +160,20 @@ function activate(context) {
                         } else {
                             //TODO: separate as string finder
                             var char;
+
+                            var line = document.lineAt(range._start._line).text;
+
                             var startOffset = 0;
-                            while(char = document.getText( new vscode.Range(
-                                        new vscode.Position(range._start._line, range._start._character-startOffset-1),
-                                        new vscode.Position(range._start._line, range._start._character-startOffset)
-                                    )), char != "'" && char != "\"" && range._start._character-startOffset-1 >= 1) {
+                            while(char = line[range._start._character-startOffset], char != "'" && char != "\"" && range._start._character-startOffset >= 0) {
                                 startOffset++;
                             }
+
                             var endOffset = 0;
-                            while(char = document.getText( new vscode.Range(
-                                        new vscode.Position(range._start._line, range._start._character+endOffset),
-                                        new vscode.Position(range._start._line, range._start._character+endOffset+1)
-                                    )), char != "'" && char != "\"") {
+                            while(char = line[range._start._character+endOffset], char != "'" && char != "\"" && range._start._character+endOffset < line.length) {
                                 endOffset++;
                             }
                             tmpModuleName = document.getText( new vscode.Range(
-                                        new vscode.Position(range._start._line, range._start._character-startOffset),
+                                        new vscode.Position(range._start._line, range._start._character-startOffset+1),
                                         new vscode.Position(range._start._line, range._start._character+endOffset)
                                     ))
                         }
