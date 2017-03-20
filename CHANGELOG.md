@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.0.26] - 2017-20-03
+## [0.0.27] - 2017-20-03
 ### Changed
 
 - Fixed 100% CPU usage problem.

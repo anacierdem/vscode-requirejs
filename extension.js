@@ -207,7 +207,7 @@ function activate(context) {
                                     parentWord = word;
                                 }
                             } else {
-                                if(tmpModuleName) {
+                                if(tmpModuleName && tmpModuleName in currentList) {
                                     searchModule(tmpModuleName, "", true).then(function(refs) {
                                         resolve([refs]);
                                         return;
