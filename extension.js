@@ -129,7 +129,7 @@ function activate(context) {
                 if(modulePath) {
                     var searchFor = "";
                     var stopSearchingFurther;
-1
+
                     if(parentWord != "") {
                         searchFor = parentWord;
                         stopSearchingFurther = false;
