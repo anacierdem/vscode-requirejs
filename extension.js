@@ -100,7 +100,7 @@ function activate(context) {
                                     }
                                 } 
                             } 
-                        } while (m);
+                        } while (m && searchFor);
 
                         if(!found || onlyNavigateToFile) {
                             resolve( new vscode.Location(newUri, new vscode.Position(0, 0) ));
@@ -121,7 +121,8 @@ function activate(context) {
                 var noComment = fullText.toString().replace(STRIP_COMMENTS, '');
                 var tmpResult = params.exec(noComment);
 
-                parseRequireDefine(tmpResult[2]);
+                if(tmpResult && tmpResult[2])
+                    parseRequireDefine(tmpResult[2]);
 
                 var modulePath;
                 modulePath = currentList[word];
