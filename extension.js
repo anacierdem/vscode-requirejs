@@ -7,7 +7,7 @@ function activate(context) {
     var referenceProvider  = function() {
         var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 
-        var parentWord = "";
+        var childWord = "";
         this.provideDefinition = function(document, position) {
             var currentList;
             var result;
@@ -110,6 +110,26 @@ function activate(context) {
                 });
             }
 
+            var extractString = function(document, range) {
+                var char;
+
+                var line = document.lineAt(range._start._line).text;
+
+                var startOffset = 0;
+                while(char = line[range._start._character-startOffset], char != "'" && char != "\"" && range._start._character-startOffset >= 0) {
+                    startOffset++;
+                }
+
+                var endOffset = 0;
+                while(char = line[range._start._character+endOffset], char != "'" && char != "\"" && range._start._character+endOffset < line.length) {
+                    endOffset++;
+                }
+                return document.getText( new vscode.Range(
+                            new vscode.Position(range._start._line, range._start._character-startOffset+1),
+                            new vscode.Position(range._start._line, range._start._character+endOffset)
+                        ))
+            }
+
             var fullText = document.getText();
             var range = document.getWordRangeAtPosition(position);
 
@@ -127,103 +147,92 @@ function activate(context) {
                 var modulePath;
                 modulePath = currentList[word];
 
+                //We matched a module (word is a module)
                 if(modulePath) {
                     var searchFor = "";
                     var stopSearchingFurther;
 
-                    if(parentWord != "") {
-                        searchFor = parentWord;
-                        stopSearchingFurther = false;
-                    } else {
+                    if(childWord == "") {//Not a parent - search for the module name (word)
                         searchFor = word;
                         stopSearchingFurther = true;
+                    } else { //It is a parent, search for the child which is a property of the module
+                        searchFor = childWord;
+                        stopSearchingFurther = false;
                     }
-                    parentWord = "";
+                    childWord = "";
 
                     return searchModule(modulePath, searchFor, stopSearchingFurther);
-                } else {
+                } else { //word is not a module
                     return new Promise(resolve => {
 
                         var continueFrom;
-                        var results = findConstructor(word);
 
-                        var before = document.getText( new vscode.Range(
-                                                    new vscode.Position(range._start._line, range._start._character-1),
-                                                    new vscode.Position(range._start._line, range._start._character)
-                                                    ));
+                        var haveParent = false;
+                        var dotPosition = document.offsetAt(new vscode.Position(range._start._line, range._start._character-1));
+                        var currentChar;
 
-                        var allDefinitions = [];
+                        //Do backwards search for a dot
+                        do {
+                            currentChar = fullText[dotPosition];
+                            if(currentChar == ".") {
+                                haveParent = true;
+                            }
+                            dotPosition--;
+                        } while(dotPosition >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
+
                         var tmpModuleName;
-
-                        if(before == ".") {
-                            var propertyParentPosition = new vscode.Position(range._start._line, range._start._character-1);
-                            var propertyParent = document.getText(document.getWordRangeAtPosition(propertyParentPosition));
-                        } else {
-                            //TODO: separate as string finder
-                            var char;
-
-                            var line = document.lineAt(range._start._line).text;
-
-                            var startOffset = 0;
-                            while(char = line[range._start._character-startOffset], char != "'" && char != "\"" && range._start._character-startOffset >= 0) {
-                                startOffset++;
-                            }
-
-                            var endOffset = 0;
-                            while(char = line[range._start._character+endOffset], char != "'" && char != "\"" && range._start._character+endOffset < line.length) {
-                                endOffset++;
-                            }
-                            tmpModuleName = document.getText( new vscode.Range(
-                                        new vscode.Position(range._start._line, range._start._character-startOffset+1),
-                                        new vscode.Position(range._start._line, range._start._character+endOffset)
-                                    ))
+                        if(!haveParent) {
+                            tmpModuleName = extractString(document, range)
                         }
 
-                        if(results.length && !propertyParent) {
-                            if(document.getText(document.getWordRangeAtPosition(results[0].range._start)) == word) {
+                        var constructors = findConstructor(word);
+                        //Dont have a parent and have a constructor, follow the constructor
+                        if(constructors.length && !haveParent) {
+                            //Break search in case the instance and the constructor have the same name
+                            if(document.getText(document.getWordRangeAtPosition(constructors[0].range._start)) == word) {
                                 resolve(undefined);
-                                return;
                             } else {
-                                continueFrom = results[0].range._start;
+                                continueFrom = constructors[0].range._start;
+                            }
+                        } else if(haveParent) {
+                            var propertyParentPosition = document.positionAt(dotPosition);
+                            var propertyParent = document.getText(document.getWordRangeAtPosition(propertyParentPosition));
+
+                            var char = document.getText(new vscode.Range(
+                                                new vscode.Position(propertyParentPosition._line, propertyParentPosition._character-1),
+                                                propertyParentPosition
+                                                ));
+
+                            //immediately invoked
+                            //TODO: search backwards
+                            if(char == ")") {
+                                var line = document.lineAt(propertyParentPosition._line).text
+                                var path = /['"]([^'"]*)/gi.exec(line);
+                                
+                                searchModule(path[1], word, true).then(function(refs) {
+                                    resolve([refs]);
+                                });
+                            } else {
+                                continueFrom = propertyParentPosition;
+                                childWord = word;
                             }
                         } else {
-                            if(propertyParent) {
-                                var char = document.getText(new vscode.Range(
-                                                    new vscode.Position(propertyParentPosition._line, propertyParentPosition._character-1),
-                                                    propertyParentPosition
-                                                    ));
-
-                                //immediately invoked
-                                if(char == ")") {
-                                    var line = document.lineAt(propertyParentPosition._line).text
-                                    var path = /['"]([^'"]*)/gi.exec(line);
-                                    
-                                    searchModule(path[1], word, true).then(function(refs) {
-                                        resolve([refs]);
-                                        return;
-                                    });
-                                } else {
-                                    continueFrom = propertyParentPosition;
-                                    parentWord = word;
+                            var isModule = false;
+                            for(var key in currentList) {
+                                if(currentList[key] == tmpModuleName) {
+                                    isModule = true;
                                 }
-                            } else {
-                                var isModule = false;
-                                for(var key in currentList) {
-                                    if(currentList[key] == tmpModuleName) {
-                                        isModule = true;
-                                    }
-                                }
-
-                                if(isModule) {
-                                    searchModule(tmpModuleName, "", true).then(function(refs) {
-                                        resolve([refs]);
-                                        return;
-                                    });
-                                } else {
-                                    resolve(undefined);
-                                }
-                                return;
                             }
+
+                            if(isModule) {
+                                searchModule(tmpModuleName, "", true).then(function(refs) {
+                                    resolve([refs]);
+                                    return;
+                                });
+                            } else {
+                                resolve(undefined);
+                            }
+                            return;
                         }
 
                         if(continueFrom) {
