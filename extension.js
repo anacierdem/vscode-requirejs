@@ -10,10 +10,15 @@ function activate(context) {
         var childWord = "";
         this.provideDefinition = function(document, position) {
             var currentList;
-            var result;
+            var fullText = document.getText();
+
+            /**
+             * Fills currentList with path/name pairs given a define/require statement
+             * @param {String} str 
+             */
             var parseRequireDefine = function(str)
             {
-                var list, func;
+                var list, func, result;
                 var array = /\[[^\]]*\]/gi;
                 var params = /function\s*\([^)]*/gi;
 
@@ -38,25 +43,34 @@ function activate(context) {
                 });
             }
 
+            /**
+             * Searched for construction patterns in the fullText and returns locations of constructor calls
+             */
             var findConstructor = function(word) {
                 var test = new RegExp("(?:"+word+"\\s*=\\s*(?:new)?\\s*)([^\\s(;]*)", "ig");
-                var m;
+                var searchResult;
 
                 var references = [];
 
                 do {
-                    m = test.exec(fullText);
-                    if (m) {
-                        var newPosition = document.positionAt(m.index + m[0].indexOf(m[1]));
+                    searchResult = test.exec(fullText);
+                    if (searchResult) {
+                        var newPosition = document.positionAt(searchResult.index + searchResult[0].indexOf(searchResult[1]));
 
                         var range = document.getWordRangeAtPosition(newPosition);
                         if(range)
                             references.push(new vscode.Location(document.uri, range));
                     }
-                } while (m);
+                } while (searchResult);
                 return references;
             }.bind(this);
 
+            /**
+             * Diverges the search to the given module
+             * @param {*} modulePath Require path of the target module
+             * @param {*} searchFor The string to search for inside the module
+             * @param {*} stopSearchingFurther If set to true, do not continue following definitions.
+             */
             var searchModule = function(modulePath, searchFor, stopSearchingFurther) {
                 var baseUri = vscode.workspace.rootPath + "/" + vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath");
 
@@ -67,41 +81,44 @@ function activate(context) {
                     newDocument.then(function(doc) {
                         var newFullText = doc.getText()
                         var test = new RegExp("(\\b" + searchFor + "\\b)", "g");
-                        var m;
+                        var searchResult;
                         var found = false;
 
                         var onlyNavigateToFile = vscode.workspace.getConfiguration("requireModuleSupport").get("onlyNavigateToFile");
 
-                        if(!onlyNavigateToFile)
-                        do {
-                            m = test.exec(newFullText);
+                        if(!onlyNavigateToFile) {
+                            do {
+                                searchResult = test.exec(newFullText);
 
-                            if (m) {
-                                found = true;
-                                var newPosition = doc.positionAt(m.index);
-                                
-                                var simpleComment = /^\s*\*/gm;
-
-                                if(!simpleComment.test(doc.lineAt(newPosition._line).text)) {
-                                    if(stopSearchingFurther) {
-                                        resolve( new vscode.Location(newUri, newPosition) );
-                                        return;
-                                    } else {
-                                        vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
-                                            if(refs.length > 0) {
-                                                resolve( refs );
-                                                return;
-                                            } else {
-                                                resolve( new vscode.Location(newUri, newPosition) )
-                                                return;
-                                            }
-                                        });
-                                        return;
-                                    }
+                                if (searchResult) {
+                                    found = true;
+                                    var newPosition = doc.positionAt(searchResult.index);
+                                    
+                                    //If not inside a comment, continue at this reference
+                                    var simpleComment = /^\s*\*/gm;
+                                    if(!simpleComment.test(doc.lineAt(newPosition._line).text)) {
+                                        if(stopSearchingFurther) {
+                                            resolve( new vscode.Location(newUri, newPosition) );
+                                            return;
+                                        } else {
+                                            //Invoke a new providerbeginning from the new location
+                                            vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
+                                                if(refs.length > 0) {
+                                                    resolve( refs );
+                                                    return;
+                                                } else {
+                                                    resolve( new vscode.Location(newUri, newPosition) )
+                                                    return;
+                                                }
+                                            });
+                                            return;
+                                        }
+                                    } 
                                 } 
-                            } 
-                        } while (m && searchFor);
+                            } while (searchResult && searchFor);
+                        }
 
+                        //Only navigate to the file
                         if(!found || onlyNavigateToFile) {
                             resolve( new vscode.Location(newUri, new vscode.Position(0, 0) ));
                             return;
@@ -110,6 +127,11 @@ function activate(context) {
                 });
             }
 
+            /**
+             * returns the string literal's contents in document covering range
+             * @param {VSCode Document} document Document to extract the string
+             * @param {VSCode Range} range Seed range
+             */
             var extractString = function(document, range) {
                 var char;
 
@@ -125,12 +147,35 @@ function activate(context) {
                     endOffset++;
                 }
                 return document.getText( new vscode.Range(
-                            new vscode.Position(range._start._line, range._start._character-startOffset+1),
-                            new vscode.Position(range._start._line, range._start._character+endOffset)
-                        ))
+                        new vscode.Position(range._start._line, range._start._character-startOffset+1),
+                        new vscode.Position(range._start._line, range._start._character+endOffset)
+                    ))
             }
 
-            var fullText = document.getText();
+            /**
+             * Searches for a character backwards inside fullText discarding spaces, tabs and newlines
+             * Returns the found index or false if not found.
+             * @param {Number} offset offset at which we start the search from
+             * @param {String} searchFor a single character to search for
+             */
+            var doBackwardsSearch = function(offset, searchFor) {
+                var currentChar;
+                var found = false;
+
+                //Do backwards search
+                do {
+                    currentChar = fullText[offset];
+                    if(currentChar == searchFor) {
+                        found = true;
+                    }
+                    offset--;
+                    if(found)
+                        return offset;
+                } while(offset >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
+                return false;
+            }
+
+            
             var range = document.getWordRangeAtPosition(position);
 
             if(range) {
@@ -164,63 +209,57 @@ function activate(context) {
                     return searchModule(modulePath, searchFor, stopSearchingFurther);
                 } else { //word is not a module
                     return new Promise(resolve => {
-
                         var continueFrom;
 
-                        var haveParent = false;
                         var dotPosition = document.offsetAt(new vscode.Position(range._start._line, range._start._character-1));
-                        var currentChar;
 
                         //Do backwards search for a dot
-                        do {
-                            currentChar = fullText[dotPosition];
-                            if(currentChar == ".") {
-                                haveParent = true;
-                            }
-                            dotPosition--;
-                        } while(dotPosition >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
-
+                        dotPosition = doBackwardsSearch(dotPosition, ".")
+                        var haveParent = dotPosition !== false;
+                      
                         var tmpModuleName;
                         if(!haveParent) {
                             tmpModuleName = extractString(document, range)
                         }
 
                         var constructors = findConstructor(word);
+                        //TODO: also consider window. defined globals
                         //Dont have a parent and have a constructor, follow the constructor
                         if(constructors.length && !haveParent) {
                             //Break search in case the instance and the constructor have the same name
                             if(document.getText(document.getWordRangeAtPosition(constructors[0].range._start)) == word) {
                                 resolve(undefined);
+                                return;
                             } else {
                                 continueFrom = constructors[0].range._start;
                             }
-                        } else if(haveParent) {
+                        } else if(haveParent) { //Have a parent - follow it
                             var propertyParentPosition = document.positionAt(dotPosition);
                             var propertyParent = document.getText(document.getWordRangeAtPosition(propertyParentPosition));
 
-                            var char = document.getText(new vscode.Range(
-                                                new vscode.Position(propertyParentPosition._line, propertyParentPosition._character-1),
-                                                propertyParentPosition
-                                                ));
+                            var bracketPosition = document.offsetAt(propertyParentPosition);
+                            //Do backwards search for a ")"
+                            bracketPosition = doBackwardsSearch(bracketPosition, ")")
 
-                            //immediately invoked
-                            //TODO: search backwards
-                            if(char == ")") {
+                            //Immediately invoked define/require
+                            if(bracketPosition !== false) {
                                 var line = document.lineAt(propertyParentPosition._line).text
                                 var path = /['"]([^'"]*)/gi.exec(line);
                                 
                                 searchModule(path[1], word, true).then(function(refs) {
                                     resolve([refs]);
+                                    return;
                                 });
                             } else {
                                 continueFrom = propertyParentPosition;
                                 childWord = word;
                             }
-                        } else {
+                        } else { //Neither have a parent nor a constructor, maybe its a module itself? navigate to module
                             var isModule = false;
                             for(var key in currentList) {
                                 if(currentList[key] == tmpModuleName) {
                                     isModule = true;
+                                    break;
                                 }
                             }
 
@@ -230,11 +269,13 @@ function activate(context) {
                                     return;
                                 });
                             } else {
+                                //No match;
                                 resolve(undefined);
+                                return;
                             }
-                            return;
                         }
 
+                        //Should we continue searching? If so re-invoke a definition provider
                         if(continueFrom) {
                             vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(function(refs) {
                                 
@@ -244,13 +285,15 @@ function activate(context) {
                                         refs.splice(i, 1);
                                     }
                                 }
-                                resolve(refs );
+                                resolve(refs);
                                 return;
                             });
                         }
                     })
                 }
             } else {
+                //No range;
+                resolve(undefined);
                 return;
             }
         }
