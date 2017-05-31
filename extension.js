@@ -1,4 +1,6 @@
 var vscode = require('vscode');
+var fs = require('fs');
+var path = require('path');
 
 const JS_MODE = { scheme: 'file' };
 
@@ -11,10 +13,11 @@ function activate(context) {
         this.provideDefinition = function(document, position) {
             var currentList;
             var fullText = document.getText();
+            var currentFilePath = document.fileName;
 
             /**
              * Fills currentList with path/name pairs given a define/require statement
-             * @param {String} str 
+             * @param {String} str
              */
             var parseRequireDefine = function(str)
             {
@@ -26,14 +29,14 @@ function activate(context) {
 
                 if(m) {
                     list = JSON.parse(m[0].split("'").join("\""));
-                } 
-                
+                }
+
                 m = params.exec(str);
 
                 if(m) {
                     var test = /([^\s,]+)/g;
                     result = m[0].slice(m[0].indexOf('(')+1).match(test);
-                } 
+                }
 
                 currentList = {}
 
@@ -72,9 +75,24 @@ function activate(context) {
              * @param {*} stopSearchingFurther If set to true, do not continue following definitions.
              */
             var searchModule = function(modulePath, searchFor, stopSearchingFurther) {
-                var baseUri = vscode.workspace.rootPath + "/" + vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath");
 
-                var newUri = vscode.Uri.file(baseUri + "/" + modulePath + ".js");
+                var newUriPath;
+
+                if (!!modulePath.match(/^\./i)) {
+                    newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, '\\'), modulePath);
+                } else {
+                    newUriPath = path.resolve(vscode.workspace.rootPath, vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath"), modulePath);
+                }
+                if (!newUriPath.match(/\.js$/i)) newUriPath += '.js';
+
+                try {
+                    fs.accessSync(newUriPath);
+                } catch (err) {
+                    console.log(err);
+                    return;
+                }
+
+                var newUri = vscode.Uri.file(newUriPath);
                 var newDocument = vscode.workspace.openTextDocument(newUri);
 
                 return new Promise(resolve => {
@@ -93,7 +111,7 @@ function activate(context) {
                                 if (searchResult) {
                                     found = true;
                                     var newPosition = doc.positionAt(searchResult.index);
-                                    
+
                                     //If not inside a comment, continue at this reference
                                     var simpleComment = /^\s*\*/gm;
                                     if(!simpleComment.test(doc.lineAt(newPosition._line).text)) {
@@ -113,8 +131,8 @@ function activate(context) {
                                             });
                                             return;
                                         }
-                                    } 
-                                } 
+                                    }
+                                }
                             } while (searchResult && searchFor);
                         }
 
@@ -175,7 +193,7 @@ function activate(context) {
                 return false;
             }
 
-            
+
             var range = document.getWordRangeAtPosition(position);
 
             if(range) {
@@ -216,7 +234,7 @@ function activate(context) {
                         //Do backwards search for a dot
                         dotPosition = doBackwardsSearch(dotPosition, ".")
                         var haveParent = dotPosition !== false;
-                      
+
                         var tmpModuleName;
                         if(!haveParent) {
                             tmpModuleName = extractString(document, range)
@@ -245,7 +263,7 @@ function activate(context) {
                             if(bracketPosition !== false) {
                                 var line = document.lineAt(propertyParentPosition._line).text
                                 var path = /['"]([^'"]*)/gi.exec(line);
-                                
+
                                 searchModule(path[1], word, true).then(function(refs) {
                                     resolve([refs]);
                                     return;
@@ -278,7 +296,7 @@ function activate(context) {
                         //Should we continue searching? If so re-invoke a definition provider
                         if(continueFrom) {
                             vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(function(refs) {
-                                
+
                                 for(var i = refs.length-1; i >= 0; i--) {
                                     //Discard if same file
                                     if(refs[i].uri._path == document.uri._path) {
