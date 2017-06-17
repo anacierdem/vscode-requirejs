@@ -79,18 +79,11 @@ function activate(context) {
                 var newUriPath;
 
                 if (!!modulePath.match(/^\./i)) {
-                    newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, '\\'), modulePath);
+                    newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, ''), modulePath);
                 } else {
                     newUriPath = path.resolve(vscode.workspace.rootPath, vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath"), modulePath);
                 }
                 if (!newUriPath.match(/\.js$/i)) newUriPath += '.js';
-
-                try {
-                    fs.accessSync(newUriPath);
-                } catch (err) {
-                    console.log(err);
-                    return;
-                }
 
                 var newUri = vscode.Uri.file(newUriPath);
                 var newDocument = vscode.workspace.openTextDocument(newUri);
@@ -141,6 +134,8 @@ function activate(context) {
                             resolve( new vscode.Location(newUri, new vscode.Position(0, 0) ));
                             return;
                         }
+                    }, function() {
+                        resolve(undefined);
                     });
                 });
             }
@@ -192,7 +187,6 @@ function activate(context) {
                 } while(offset >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
                 return false;
             }
-
 
             var range = document.getWordRangeAtPosition(position);
 
