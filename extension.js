@@ -1,5 +1,4 @@
 var vscode = require('vscode');
-var fs = require('fs');
 var path = require('path');
 
 const JS_MODE = { scheme: 'file' };
