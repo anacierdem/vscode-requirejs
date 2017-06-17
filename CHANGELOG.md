@@ -1,5 +1,39 @@
 # Change Log
 
+
+## [0.0.29] - 2017-26-05
+### Added
+
+- Multiline statement and space support added.
+
+## [0.0.28] - 2017-20-03
+### Changed
+
+- Fixed 100% CPU usage problem.
+- Resolved a console error.
+- Fixed bugs preventing the last search on target module.
+
+## [0.0.23] - 2017-15-03
+### Changed
+
+- Changed logo for larger display.
+
+## [0.0.21] - 2017-14-03
+### Changed
+
+- Can navigate to modules via strings in module name list.
+
+## [0.0.20] - 2017-14-03
+### Changed
+
+- Imported module does not have to be used with new keyword anymore.
+- Simple comments does not interfere with definition navigation.
+- Fixed a problem causing navigation error in some cases. 
+
+### Added
+
+- New setting (onlyNavigateToFile) to decide whether to do a final search on the landing page. 
+
 ## [0.0.18] - 2017-13-03
 ### Changed
 
