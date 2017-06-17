@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.30] - 2017-18-06
+### Added
+
+- Handle relative paths and unknown modules.
 
 ## [0.0.29] - 2017-26-05
 ### Added
