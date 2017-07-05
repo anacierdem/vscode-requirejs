@@ -201,7 +201,7 @@ function activate(context) {
                     parseRequireDefine(tmpResult[2]);
 
                 var modulePath;
-                modulePath = currentList[word];
+                modulePath = currentList ? currentList[word] : null;
 
                 //We matched a module (word is a module)
                 if(modulePath) {
@@ -222,7 +222,9 @@ function activate(context) {
                     return new Promise(resolve => {
                         var continueFrom;
 
-                        var dotPosition = document.offsetAt(new vscode.Position(range._start._line, range._start._character-1));
+                        var dotPosition = range._start._character >= 1 ?
+                                            document.offsetAt(new vscode.Position(range._start._line, range._start._character-1)) :
+                                            0;
 
                         //Do backwards search for a dot
                         dotPosition = doBackwardsSearch(dotPosition, ".")
@@ -256,6 +258,11 @@ function activate(context) {
                             if(bracketPosition !== false) {
                                 var line = document.lineAt(propertyParentPosition._line).text
                                 var path = /['"]([^'"]*)/gi.exec(line);
+
+                                if(path.length == 0) {
+                                    resolve(undefined);
+                                    return;
+                                }
 
                                 searchModule(path[1], word, true).then(function(refs) {
                                     resolve([refs]);
