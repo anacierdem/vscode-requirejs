@@ -4,7 +4,6 @@ var path = require('path');
 const JS_MODE = { scheme: 'file' };
 
 function activate(context) {
-
     var referenceProvider  = function() {
         var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 
