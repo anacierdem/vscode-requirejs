@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.0.32] - 2017-06-07
+### Changed
+
+- Fixed a bug causing navigation error when the variable name includes the constructor name.
+
 ## [0.0.31] - 2017-05-07
 ### Changed
 

@@ -56,7 +56,7 @@ function activate(context) {
                 do {
                     searchResult = test.exec(fullText);
                     if (searchResult) {
-                        var newPosition = document.positionAt(searchResult.index + searchResult[0].indexOf(searchResult[1]));
+                        var newPosition = document.positionAt(searchResult.index + searchResult[0].length);
 
                         var range = document.getWordRangeAtPosition(newPosition);
                         if(range)
