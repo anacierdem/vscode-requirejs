@@ -7,23 +7,30 @@ Object.assign(exports, {
      * @return {Object} 
      */
     getModulesWithPathFromRequireOrDefine(str) {
-        const result = {};
-        const pathsAndParams = /\[(.*)\], function\s?\((.*)\)\s?{/i.exec(str);
+        let list, result;
+        const array = /\[[^\]]*\]/gi;
+        const params = /function\s*\([^)]*/gi;
 
-        function splitAndTrim(str) {
-            return str.split(',').map(value => value.trim());
+        var m = array.exec(str);
+
+        if(m) {
+            list = JSON.parse(m[0].split("'").join("\""));
         }
 
-        if (pathsAndParams && pathsAndParams.length === 3) {
-            const paths = splitAndTrim(pathsAndParams[1]);
-            const params = splitAndTrim(pathsAndParams[2]);
+        m = params.exec(str);
 
-            if (paths.length === params.length) {
-                params.forEach((param, index) => result[param] = paths[index].replace(/'/g, ''));
-            }
+        if(m) {
+            var test = /([^\s,]+)/g;
+            result = m[0].slice(m[0].indexOf('(')+1).match(test);
         }
 
-        return result;
+        const parsedResult = {}
+
+        if(result) {
+            result.forEach((value, index) => parsedResult[value] = list[index]);
+        }
+
+        return parsedResult;
     },
 
     /**
@@ -32,7 +39,7 @@ Object.assign(exports, {
      * @return {String} 
      */
     getRequireOrDefineStatement(str) {
-        const match = /(define|require)\s?\(([^)]*)\)\s?{/gi.exec(str + "");
+        const match = /(define|require)\s*\(([^)]*)/gi.exec(str + "");
         return match && match[0] || null;
     },
 
