@@ -1,0 +1,1 @@
+require('moduleA').foo();
