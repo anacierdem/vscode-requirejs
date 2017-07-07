@@ -281,7 +281,7 @@ class ReferenceProvider {
                                 return;
                             }
 
-                            this.searchModule(currentFilePath, path[1], textAtCaret, true).then(function(refs) {
+                            this.searchModule(currentFilePath, path[1], textAtCaret, true).then(refs => {
                                 resolve([refs]);
                                 return;
                             });
@@ -299,7 +299,7 @@ class ReferenceProvider {
                         }
 
                         if(isModule) {
-                            this.searchModule(currentFilePath, tmpModuleName, "", true).then(function(refs) {
+                            this.searchModule(currentFilePath, tmpModuleName, "", true).then(refs => {
                                 resolve([refs]);
                                 return;
                             });
@@ -312,7 +312,7 @@ class ReferenceProvider {
 
                     //Should we continue searching? If so re-invoke a definition provider
                     if(continueFrom) {
-                        vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(function(refs) {
+                        vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(refs => {
 
                             for(let i = refs.length-1; i >= 0; i--) {
                                 //Discard if same file
