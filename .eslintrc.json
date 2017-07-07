@@ -3,8 +3,7 @@
         "browser": false,
         "commonjs": true,
         "es6": true,
-        "node": true,
-        "mocha": true
+        "node": true
     },
     "parserOptions": {
         "ecmaFeatures": {
@@ -20,8 +19,5 @@
         "no-unused-vars": "warn",
         "constructor-super": "warn",
         "valid-typeof": "warn"
-    },
-    "globals": {
-        "resolve": true
     }
 }
