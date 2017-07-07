@@ -335,6 +335,7 @@ class ReferenceProvider {
 }
 
 Object.assign(exports, {
+    ReferenceProvider,
     activate(context) {
         context.subscriptions.push(
             vscode.languages.registerDefinitionProvider(
