@@ -24,7 +24,7 @@ suite('ReferenceProvider', () => {
         assert.equal(referenceProvider.getRequireOrDefineStatement(input), expected);
     });
 
-    test('removeComments should remove comments from tekst', () => {
+    test('removeComments should remove comments from text', () => {
         const input = `
             define(['./module'], function (module) {
                 // require();
