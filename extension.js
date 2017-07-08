@@ -173,21 +173,22 @@ class ReferenceProvider {
             endOffset++;
         }
         return document.getText( new vscode.Range(
-                new vscode.Position(range._start._line, range._start._character-startOffset+1),
-                new vscode.Position(range._start._line, range._start._character+endOffset)
-            ))
+            new vscode.Position(range._start._line, range._start._character-startOffset+1),
+            new vscode.Position(range._start._line, range._start._character+endOffset)
+        ))
     }
-
     /**
      * Searches for a character backwards inside fullText discarding spaces, tabs and newlines
-     * Returns the found index or false if not found.
+     * Returns the found index-1 or false if any other character is found.
+     * The purpose of this function is finding the position of the last character that is not 
+     * the given character excluding newline/spaces. For example when finding the parent of a
+     * property.
      * @param {Number} offset offset at which we start the search from
      * @param {String} searchFor a single character to search for
      */
-    doBackwardsSearch(fullText, offset, searchFor) {
-        let currentChar;
-        let found = false;
-
+    doBackwardsSearch = function(offset, searchFor) {
+        var currentChar;
+        var found = false;
         //Do backwards search
         do {
             currentChar = fullText[offset];
