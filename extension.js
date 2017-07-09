@@ -83,9 +83,10 @@ class ReferenceProvider {
 
     /**
      * Diverges the search to the given module
-     * @param {*} modulePath Require path of the target module
-     * @param {*} searchFor The string to search for inside the module
-     * @param {*} stopSearchingFurther If set to true, do not continue following definitions.
+     * @param {String} currentFilePath Current file path to start search from
+     * @param {String} modulePath Require path of the target module
+     * @param {String} searchFor The string to search for inside the module
+     * @param {Bool} stopSearchingFurther If set to true, do not continue following definitions.
      */
     searchModule(currentFilePath, modulePath, searchFor, stopSearchingFurther) {
 
