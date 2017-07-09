@@ -38,5 +38,5 @@ suite('doBackwardsSearch', () => {
         const expected = -1;
 
         assert.equal(referenceProvider.doBackwardsSearch(input, input.length-1, '.'), expected);
-    }); 
+    });
 });
