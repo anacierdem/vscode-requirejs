@@ -1,52 +1,53 @@
 {
-    "name": "require-js",
-    "displayName": "Require Module Support",
-    "description": "Adds require.js AMD module goto definition support.",
-    "version": "0.0.32",
-    "publisher": "lici",
-    "icon": "logo.png",
-    "engines": {
-        "vscode": "^1.5.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onLanguage:javascript"
-    ],
-    "main": "./extension",
-    "contributes": {
-        "configuration": {
-            "type": "object",
-            "title": "Require Module Support",
-            "properties": {
-                "requireModuleSupport.modulePath": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Module path relative to workspace root"
-                },
-                "requireModuleSupport.onlyNavigateToFile": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Should we search inside the landing file?"
-                }
-            }
+  "name": "require-js",
+  "displayName": "Require Module Support",
+  "description": "Adds require.js AMD module goto definition support.",
+  "version": "0.0.32",
+  "publisher": "lici",
+  "icon": "logo.png",
+  "engines": {
+    "vscode": "^1.5.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript"
+  ],
+  "main": "./extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Require Module Support",
+      "properties": {
+        "requireModuleSupport.modulePath": {
+          "type": "string",
+          "default": "",
+          "description": "Module path relative to workspace root"
+        },
+        "requireModuleSupport.onlyNavigateToFile": {
+          "type": "boolean",
+          "default": false,
+          "description": "Should we search inside the landing file?"
         }
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/anacierdem/vscode-requirejs.git"
-    },
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
-        "mocha": "^2.3.3",
-        "eslint": "^3.6.0",
-        "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
+      }
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anacierdem/vscode-requirejs.git"
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "eslint": "^3.6.0",
+    "mocha": "^2.3.3",
+    "proxyquire": "^1.8.0",
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0"
+  }
 }
