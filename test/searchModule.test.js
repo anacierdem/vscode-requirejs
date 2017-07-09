@@ -1,27 +1,14 @@
 const vscode = require('vscode');
-const rootPath = __dirname.replace('test', '');
-const vscodeStub = {
-    workspace: { 
-        rootPath: rootPath,
+const rootPath = __dirname.replace('test', '').replace(/\\/g, '/');
+const vscodeStub = Object.assign(vscode, {
+    workspace: {
+        rootPath,
         openTextDocument: vscode.workspace.openTextDocument,
-        getConfiguration() {
-            return {
-                get(conf) {
-                    switch(conf) {
-                        case 'modulePath':
-                            return "testFiles";
-                        case 'onlyNavigateToFile':
-                            return false;
-                    }
-                }
-            }
+        getConfiguration() { 
+            return { get: conf => conf === 'modulePath' ? 'testFiles' : false }
         }
-    },
-    Uri: vscode.Uri,
-    Location: vscode.Location,
-    commands: vscode.commands,
-    Position: vscode.Position
-};
+    }
+});
 const assert = require('assert');
 const proxyquire = require('proxyquire');
 const { ReferenceProvider } = proxyquire('../extension', { 'vscode': vscodeStub });
@@ -29,9 +16,18 @@ const referenceProvider = new ReferenceProvider();
 
 suite('searchModule', () => {
     test('searchModule should resolve with path for moduleA.js', () => {
-        return referenceProvider.searchModule('../testFiles', 'moduleA', 'a', true)
+        return referenceProvider.searchModule('../testFiles/test1.js', 'moduleA', '', true)
             .then(result => {
-                assert.equal(result.uri._fsPath, `${rootPath}testFiles\\moduleA.js`);
+                assert.equal(result.uri._path, `/${rootPath}testFiles/moduleA.js`);
+            });
+    });
+
+    test('searchModule should find method foo in moduleA.js', () => {
+        return referenceProvider.searchModule('../testFiles/test3.js', 'moduleA', 'foo', true)
+            .then(result => {
+                assert.equal(result.uri._path, `/${rootPath}testFiles/moduleA.js`);
+                assert.equal(result.range._start._line, 2);
+                assert.equal(result.range._start._character, 8);
             });
     });
 });

@@ -89,8 +89,7 @@ class ReferenceProvider {
      * @param {Bool} stopSearchingFurther If set to true, do not continue following definitions.
      */
     searchModule(currentFilePath, modulePath, searchFor, stopSearchingFurther) {
-
-        var newUriPath;
+        let newUriPath;
 
         if (!!modulePath.match(/^\./i)) {
             newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, ''), modulePath);
@@ -99,17 +98,17 @@ class ReferenceProvider {
         }
         if (!newUriPath.match(/\.js$/i)) newUriPath += '.js';
 
-        var newUri = vscode.Uri.file(newUriPath);
-        var newDocument = vscode.workspace.openTextDocument(newUri);
+        const newUri = vscode.Uri.file(newUriPath);
+        const newDocument = vscode.workspace.openTextDocument(newUri);
 
         return new Promise(resolve => {
-            newDocument.then(function(doc) {
-                var newFullText = doc.getText()
-                var test = new RegExp("(\\b" + searchFor + "\\b)", "g");
-                var searchResult;
-                var found = false;
+            newDocument.then(doc => {
+                const newFullText = doc.getText();
+                const test = new RegExp("(\\b" + searchFor + "\\b)", "g");
+                let searchResult;
+                let found = false;
 
-                var onlyNavigateToFile = vscode.workspace.getConfiguration("requireModuleSupport").get("onlyNavigateToFile");
+                const onlyNavigateToFile = vscode.workspace.getConfiguration("requireModuleSupport").get("onlyNavigateToFile");
 
                 if(!onlyNavigateToFile) {
                     do {
@@ -117,17 +116,17 @@ class ReferenceProvider {
 
                         if (searchResult) {
                             found = true;
-                            var newPosition = doc.positionAt(searchResult.index);
+                            const newPosition = doc.positionAt(searchResult.index);
 
                             //If not inside a comment, continue at this reference
-                            var simpleComment = /^\s*\*/gm;
+                            const simpleComment = /^\s*\*/gm;
                             if(!simpleComment.test(doc.lineAt(newPosition._line).text)) {
                                 if(stopSearchingFurther) {
                                     resolve( new vscode.Location(newUri, newPosition) );
                                     return;
                                 } else {
                                     //Invoke a new providerbeginning from the new location
-                                    vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(function(refs) {
+                                    vscode.commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(refs => {
                                         if(refs.length > 0) {
                                             resolve( refs );
                                             return;
@@ -148,9 +147,7 @@ class ReferenceProvider {
                     resolve( new vscode.Location(newUri, new vscode.Position(0, 0) ));
                     return;
                 }
-            }, function() {
-                resolve(undefined);
-            });
+            }, () => resolve(undefined));
         });
     }
 
@@ -160,16 +157,16 @@ class ReferenceProvider {
      * @param {VSCode Range} range Seed range
      */
     extractString(document, range) {
-        var char;
+        let char;
 
-        var line = document.lineAt(range._start._line).text;
+        const line = document.lineAt(range._start._line).text;
 
-        var startOffset = 0;
+        let startOffset = 0;
         while(char = line[range._start._character-startOffset], char != "'" && char != "\"" && range._start._character-startOffset >= 0) {
             startOffset++;
         }
 
-        var endOffset = 0;
+        let endOffset = 0;
         while(char = line[range._start._character+endOffset], char != "'" && char != "\"" && range._start._character+endOffset < line.length) {
             endOffset++;
         }
