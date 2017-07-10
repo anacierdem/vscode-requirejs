@@ -47,6 +47,7 @@
     "eslint": "^3.6.0",
     "mocha": "^2.3.3",
     "proxyquire": "^1.8.0",
+    "sinon": "^2.3.7",
     "typescript": "^2.0.3",
     "vscode": "^1.0.0"
   }
