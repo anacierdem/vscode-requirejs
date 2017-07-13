@@ -205,7 +205,6 @@ class ReferenceProvider {
         const currentFilePath = document.fileName;
         const range = document.getWordRangeAtPosition(position);
 
-        let childWord = "";
         let moduleList;        
 
         if(range) {
@@ -225,14 +224,14 @@ class ReferenceProvider {
                 let searchFor = "";
                 let stopSearchingFurther;
 
-                if(childWord == "") {//Not a parent - search for the module name (word)
+                if(ReferenceProvider.childWord == "") {//Not a parent - search for the module name (word)
                     searchFor = textAtCaret;
                     stopSearchingFurther = true;
                 } else { //It is a parent, search for the child which is a property of the module
-                    searchFor = childWord;
+                    searchFor = ReferenceProvider.childWord;
                     stopSearchingFurther = false;
                 }
-                childWord = "";
+                ReferenceProvider.childWord = "";
 
                 return this.searchModule(currentFilePath, modulePath, searchFor, stopSearchingFurther);
             } else { //word is not a module
@@ -286,7 +285,7 @@ class ReferenceProvider {
                             });
                         } else {
                             continueFrom = propertyParentPosition;
-                            childWord = textAtCaret;
+                            ReferenceProvider.childWord = textAtCaret;
                         }
                     } else { //Neither have a parent nor a constructor, maybe its a module itself? navigate to module
                         let isModule = false;
@@ -332,6 +331,8 @@ class ReferenceProvider {
         }
     }
 }
+
+ReferenceProvider.childWord = "";
 
 Object.assign(exports, {
     ReferenceProvider,
