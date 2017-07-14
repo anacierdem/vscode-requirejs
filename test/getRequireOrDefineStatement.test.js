@@ -8,7 +8,7 @@ suite('getRequireOrDefineStatement', () => {
             define(['./module'], function (module) {
             })
         `;
-        const expected = `define(['./module'], function (module`;
+        const expected = `define(['./module'], function (module) {`;
         
         assert.equal(referenceProvider.getRequireOrDefineStatement(input), expected);
     });

@@ -9,7 +9,7 @@ class ReferenceProvider {
      * @return {String} 
      */
     getRequireOrDefineStatement(str) {
-        const match = /(define|require)\s*\(([^)]*)/gi.exec(str + "");
+        const match = /(define|require)\s?\(([^)]*)\)\s?{/gi.exec(str + "");
         return match && match[0] || null;
     }
 
@@ -19,30 +19,23 @@ class ReferenceProvider {
      * @return {Object} 
      */
     getModulesWithPathFromRequireOrDefine(str) {
-        let list, result;
-        const array = /\[[^\]]*\]/gi;
-        const params = /function\s*\([^)]*/gi;
+        const result = {};
+        const pathsAndParams = /\[(.*)\], function\s?\((.*)\)\s?{/i.exec(str);
 
-        let m = array.exec(str);
-
-        if(m) {
-            list = JSON.parse(m[0].split("'").join("\""));
+        function splitAndTrim(str) {
+            return str.split(',').map(value => value.trim());
         }
 
-        m = params.exec(str);
+        if (pathsAndParams && pathsAndParams.length === 3) {
+            const paths = splitAndTrim(pathsAndParams[1]);
+            const params = splitAndTrim(pathsAndParams[2]);
 
-        if(m) {
-            var test = /([^\s,]+)/g;
-            result = m[0].slice(m[0].indexOf('(')+1).match(test);
+            if (paths.length === params.length) {
+                params.forEach((param, index) => result[param] = paths[index].replace(/'/g, ''));
+            }
         }
 
-        const moduleList = {}
-
-        if(result) {
-            result.forEach((value, index) => moduleList[value] = list[index]);
-        }
-
-        return moduleList;
+        return result;
     }
 
     /**
@@ -205,7 +198,7 @@ class ReferenceProvider {
         const currentFilePath = document.fileName;
         const range = document.getWordRangeAtPosition(position);
 
-        let moduleList;        
+        let moduleList = {};        
 
         if(range) {
             const textAtCaret = document.getText(range);
@@ -216,8 +209,7 @@ class ReferenceProvider {
                 moduleList = this.getModulesWithPathFromRequireOrDefine(requireOrDefineStatement);
             }
 
-            let modulePath;
-            modulePath = moduleList ? moduleList[textAtCaret] : null;
+            const modulePath = textAtCaret in moduleList ? moduleList[textAtCaret] : null;
 
             //We matched a module (word is a module)
             if(modulePath) {
@@ -244,25 +236,31 @@ class ReferenceProvider {
 
                     //Do backwards search for a dot
                     dotPosition = this.doBackwardsSearch(fullText, dotPosition, ".")
-                    const haveParent = dotPosition !== false;
+                    const hasParent = dotPosition !== false;
 
                     let tmpModuleName;
-                    if(!haveParent) {
+                    if(!hasParent) {
                         tmpModuleName = this.extractString(document, range)
                     }
 
                     const constructors = this.findConstructor(document, textAtCaret, fullText);
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
-                    if(constructors.length && !haveParent) {
+                    if(constructors.length && !hasParent) {
+                        let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
                         //Break search in case the instance and the constructor have the same name
-                        if(document.getText(document.getWordRangeAtPosition(constructors[0].range._start)) == textAtCaret) {
+                        if(constructorName === textAtCaret) {
                             resolve(undefined);
                             return;
+                        } else if (constructorName === 'require') {
+                            this.searchModule(currentFilePath, textAtCaret, '', true).then(refs => {
+                                resolve([refs]);
+                                return;
+                            });
                         } else {
                             continueFrom = constructors[0].range._start;
                         }
-                    } else if(haveParent) { //Have a parent - follow it
+                    } else if(hasParent) { //Have a parent - follow it
                         const propertyParentPosition = document.positionAt(dotPosition);
                         let bracketPosition = document.offsetAt(propertyParentPosition);
 
@@ -289,8 +287,8 @@ class ReferenceProvider {
                         }
                     } else { //Neither have a parent nor a constructor, maybe its a module itself? navigate to module
                         let isModule = false;
-                        for(let key in moduleList) {
-                            if(moduleList[key] == tmpModuleName) {
+                        for(let moduleName in moduleList) {
+                            if(moduleList[moduleName] == tmpModuleName) {
                                 isModule = true;
                                 break;
                             }
