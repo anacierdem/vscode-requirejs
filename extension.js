@@ -9,7 +9,7 @@ class ReferenceProvider {
      * @return {String} 
      */
     getRequireOrDefineStatement(str) {
-        const match = /(define|require)\s?\(([^)]*)\)\s?{/gi.exec(str + "");
+        const match = /[define|require].*{/gi.exec(str + "");
         return match && match[0] || null;
     }
 
