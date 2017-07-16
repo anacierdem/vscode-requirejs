@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/michaelw85/vscode-requirejs.svg?branch=master)](https://travis-ci.org/michaelw85/vscode-requirejs)
+
 # Require Module Support README
 
 ## Features
