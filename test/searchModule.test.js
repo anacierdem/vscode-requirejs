@@ -16,14 +16,14 @@ const { ReferenceProvider } = proxyquire('../extension', { 'vscode': vscodeStub 
 const referenceProvider = new ReferenceProvider();
 
 suite('searchModule', () => {
-    test('searchModule should resolve with path for moduleA.js', () => {
+    test('should resolve with path for moduleA.js', () => {
         return referenceProvider.searchModule('../testFiles/test1.js', 'moduleA', '', true)
             .then(result => {
                 assert.equal(normalize(result.uri._path), normalize(`/${rootPath}testFiles/moduleA.js`));
             });
     });
 
-    test('searchModule should find method foo in moduleA.js', () => {
+    test('should find method foo in moduleA.js', () => {
         return referenceProvider.searchModule('../testFiles/test3.js', 'moduleA', 'foo', true)
             .then(result => {
                 assert.equal(normalize(result.uri._path), normalize(`/${rootPath}testFiles/moduleA.js`));
