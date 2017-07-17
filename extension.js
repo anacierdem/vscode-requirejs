@@ -3,13 +3,23 @@ const path = require('path');
 
 class ReferenceProvider {
 
+     /**
+     * Remove all white space and new lines from str
+     * @param {String} str
+     * @return {String}
+     */
+    stripWhiteSpaceAndNewLines(str) {
+        return (str + '').replace(/\s|\r|\n/g, '');
+    }
+
     /**
      * Get a require or define statement from string
      * @param {String} str
      * @return {String} 
      */
     getRequireOrDefineStatement(str) {
-        const match = /[define|require].*{/gi.exec(str + "");
+        str = this.stripWhiteSpaceAndNewLines(str);
+        const match = /(define|require).*{/i.exec(str);
         return match && match[0] || null;
     }
 
@@ -19,8 +29,9 @@ class ReferenceProvider {
      * @return {Object} 
      */
     getModulesWithPathFromRequireOrDefine(str) {
+        str = this.stripWhiteSpaceAndNewLines(str);
         const result = {};
-        const pathsAndParams = /\[(.*)\], function\s?\((.*)\)\s?{/i.exec(str);
+        const pathsAndParams = /\[(.*)\],function\s?\((.*)\)\s?{/i.exec(str);
 
         function splitAndTrim(str) {
             return str.split(',').map(value => value.trim());
