@@ -95,7 +95,7 @@ class ReferenceProvider {
                 const newPosition = document.positionAt(searchResult.index + searchResult[0].length + haystackOffset);
 
                 const range = document.getWordRangeAtPosition(newPosition);
-                if(range) {
+                if (range) {
                     references.push(new Location(document.uri, range));
                 }
             }
@@ -114,7 +114,7 @@ class ReferenceProvider {
     searchModule(currentFilePath, modulePath, searchFor, stopSearchingFurther) {
         let newUriPath;
 
-        if (!!modulePath.match(/^\./i)) {
+        if (!modulePath.match(/^\./i)) {
             newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, ''), modulePath);
         } else {
             newUriPath = path.resolve(workspace.rootPath, workspace.getConfiguration("requireModuleSupport").get("modulePath"), modulePath);
@@ -133,7 +133,7 @@ class ReferenceProvider {
 
                 const onlyNavigateToFile = workspace.getConfiguration("requireModuleSupport").get("onlyNavigateToFile");
 
-                if(!onlyNavigateToFile) {
+                if (!onlyNavigateToFile) {
                     do {
                         searchResult = test.exec(newFullText);
 
@@ -143,14 +143,14 @@ class ReferenceProvider {
 
                             //If not inside a comment, continue at this reference
                             const simpleComment = /^\s*\*/gm;
-                            if(!simpleComment.test(doc.lineAt(newPosition._line).text)) {
-                                if(stopSearchingFurther) {
+                            if (!simpleComment.test(doc.lineAt(newPosition._line).text)) {
+                                if (stopSearchingFurther) {
                                     resolve( new Location(newUri, newPosition) );
                                     return;
                                 } else {
                                     //Invoke a new providerbeginning from the new location
                                     commands.executeCommand('vscode.executeDefinitionProvider', newUri, newPosition).then(refs => {
-                                        if(refs.length > 0) {
+                                        if (refs.length > 0) {
                                             resolve( refs );
                                             return;
                                         } else {
@@ -166,7 +166,7 @@ class ReferenceProvider {
                 }
 
                 //Only navigate to the file
-                if(!found || onlyNavigateToFile) {
+                if (!found || onlyNavigateToFile) {
                     resolve( new Location(newUri, new Position(0, 0) ));
                     return;
                 }
@@ -213,11 +213,11 @@ class ReferenceProvider {
         //Do backwards search
         do {
             currentChar = fullText[offset];
-            if(currentChar == searchFor) {
+            if (currentChar == searchFor) {
                 found = true;
             }
             offset--;
-            if(found)
+            if (found)
                 return offset;
         } while(offset >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
         return false;
@@ -230,23 +230,32 @@ class ReferenceProvider {
 
         let moduleList = {};        
 
-        if(range) {
+        if (range) {
+            let textToParse;
             const textAtCaret = document.getText(range);
-            const codeBlockUntillTextAtCaret = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
-            const requireOrDefineStatement = this.getRequireOrDefineStatement(codeBlockUntillTextAtCaret);
+            const lineContainingTextAtCaret = document.lineAt(range._start._line).text;
+            
+            if ((fullText.match(/(require|define)/g) || []).length === 1) {
+                textToParse = fullText;
+            } else {
+              const codeBlockUntillTextAtCaret = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
+              textToParse = /\n/.test(codeBlockUntillTextAtCaret) ? codeBlockUntillTextAtCaret : lineContainingTextAtCaret;
+            } 
 
-            if(requireOrDefineStatement) {
+            const requireOrDefineStatement = this.getRequireOrDefineStatement(textToParse);
+           
+            if (requireOrDefineStatement) {
                 moduleList = this.getModulesWithPathFromRequireOrDefine(requireOrDefineStatement);
             }
 
             const modulePath = textAtCaret in moduleList ? moduleList[textAtCaret] : null;
 
             //We matched a module (word is a module)
-            if(modulePath) {
+            if (modulePath) {
                 let searchFor = "";
                 let stopSearchingFurther;
 
-                if(ReferenceProvider.childWord == "") {//Not a parent - search for the module name (word)
+                if (ReferenceProvider.childWord == "") {//Not a parent - search for the module name (word)
                     searchFor = textAtCaret;
                     stopSearchingFurther = true;
                 } else { //It is a parent, search for the child which is a property of the module
@@ -269,21 +278,21 @@ class ReferenceProvider {
                     const hasParent = dotPosition !== false;
 
                     let tmpModuleName;
-                    if(!hasParent) {
+                    if (!hasParent) {
                         tmpModuleName = this.extractString(document, range);
                     }
 
-                    const constructors = this.findConstructor(document, textAtCaret, codeBlockUntillTextAtCaret);
+                    const constructors = this.findConstructor(document, textAtCaret, textToParse);
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
-                    if(constructors.length && !hasParent) {
+                    if (constructors.length && !hasParent) {
                         let constructorName = document.getText(
                             document.getWordRangeAtPosition(
                                 new Position(constructors[0].range._start._line, constructors[0].range._start._character)
                             )
                         );
                         //Break search in case the instance and the constructor have the same name
-                        if(constructorName === textAtCaret) {
+                        if (constructorName === textAtCaret) {
                             resolve(undefined);
                             return;
                         } else if (constructorName === 'require') {
@@ -294,7 +303,7 @@ class ReferenceProvider {
                         } else {
                             continueFrom = constructors[0].range._start;
                         }
-                    } else if(hasParent) { //Have a parent - follow it
+                    } else if (hasParent) { //Have a parent - follow it
                         const propertyParentPosition = document.positionAt(dotPosition);
                         let bracketPosition = document.offsetAt(propertyParentPosition);
 
@@ -302,11 +311,11 @@ class ReferenceProvider {
                         bracketPosition = this.doBackwardsSearch(fullText, bracketPosition, ")");
 
                         //Immediately invoked define/require
-                        if(bracketPosition !== false) {
+                        if (bracketPosition !== false) {
                             const line = document.lineAt(propertyParentPosition._line).text;
                             const path = /['"]([^'"]*)/gi.exec(line);
 
-                            if(path.length == 0) {
+                            if (path.length == 0) {
                                 resolve(undefined);
                                 return;
                             }
@@ -321,14 +330,14 @@ class ReferenceProvider {
                         }
                     } else { //Neither have a parent nor a constructor, maybe its a module itself? navigate to module
                         let isModule = false;
-                        for(let moduleName in moduleList) {
-                            if(moduleList[moduleName] == tmpModuleName) {
+                        for (let moduleName in moduleList) {
+                            if (moduleList[moduleName] == tmpModuleName) {
                                 isModule = true;
                                 break;
                             }
                         }
 
-                        if(isModule) {
+                        if (isModule) {
                             this.searchModule(currentFilePath, tmpModuleName, "", true).then(refs => {
                                 resolve([refs]);
                                 return;
@@ -341,12 +350,12 @@ class ReferenceProvider {
                     }
 
                     //Should we continue searching? If so re-invoke a definition provider
-                    if(continueFrom) {
+                    if (continueFrom) {
                         commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(refs => {
 
                             for(let i = refs.length-1; i >= 0; i--) {
                                 //Discard if same file
-                                if(refs[i].uri._path == document.uri._path) {
+                                if (refs[i].uri._path == document.uri._path) {
                                     refs.splice(i, 1);
                                 }
                             }
