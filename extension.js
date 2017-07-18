@@ -235,12 +235,13 @@ class ReferenceProvider {
         if (range) {
             let textToParse;
             const textAtCaret = document.getText(range);
-            const lineContainingTextAtCaret = document.lineAt(range._start._line).text;
             
             if ((fullText.match(/(require|define)/g) || []).length === 1) {
                 textToParse = fullText;
             } else {
               const codeBlockUntillTextAtCaret = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
+              const lineContainingTextAtCaret = document.lineAt(range._start._line).text;
+              
               textToParse = /\n/.test(codeBlockUntillTextAtCaret) ? codeBlockUntillTextAtCaret : lineContainingTextAtCaret;
             } 
 
