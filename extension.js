@@ -114,7 +114,7 @@ class ReferenceProvider {
     searchModule(currentFilePath, modulePath, searchFor, stopSearchingFurther) {
         let newUriPath;
 
-        if (!modulePath.match(/^\./i)) {
+        if (modulePath.match(/^\./i)) {
             newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, ''), modulePath);
         } else {
             newUriPath = path.resolve(workspace.rootPath, workspace.getConfiguration("requireModuleSupport").get("modulePath"), modulePath);
