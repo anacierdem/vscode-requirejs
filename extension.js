@@ -40,6 +40,10 @@ class ReferenceProvider {
         return textBeforeCharWithoutComments.substr(lastOccuranceRequireOrDefine > -1 ? lastOccuranceRequireOrDefine : 0);
     }
 
+    stringHasMultipleDefineOrRequireStatements(str) {
+        return (str.match(/(require|define)\(/g) || []).length > 1;
+    }
+
     /**
      * Returns obj with name/path pairs from define/require statement
      * @param {String} str
@@ -236,14 +240,14 @@ class ReferenceProvider {
             let textToParse;
             const textAtCaret = document.getText(range);
             
-            if ((fullText.match(/(require|define)/g) || []).length === 1) {
-                textToParse = fullText;
-            } else {
+            if (this.stringHasMultipleDefineOrRequireStatements(fullText)) {
               const codeBlockUntillTextAtCaret = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
               const lineContainingTextAtCaret = document.lineAt(range._start._line).text;
               
               textToParse = /\n/.test(codeBlockUntillTextAtCaret) ? codeBlockUntillTextAtCaret : lineContainingTextAtCaret;
-            } 
+            } else {
+                textToParse = fullText;                
+            }
 
             const requireOrDefineStatement = this.getRequireOrDefineStatement(textToParse);
            

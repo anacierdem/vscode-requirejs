@@ -7,7 +7,6 @@ define("moduleA", function() {
             
         },
         baz: function() {
-            
         }
     };
 });
