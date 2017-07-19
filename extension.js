@@ -325,8 +325,8 @@ class ReferenceProvider {
 
             const modulePath = textAtCaret in moduleList ? moduleList[textAtCaret] : null;
 
-            //We matched a module (word is a module)
-            if (modulePath) {
+            //We matched a module (textAtCaret is a module)
+            if(modulePath) {
                 let searchFor = "";
                 let stopSearchingFurther;
 
