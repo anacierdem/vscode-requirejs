@@ -10,11 +10,11 @@ const vscodeStub = {
 const extension = proxyquire('../extension', { vscode: vscodeStub });
 
 suite('extension', () => {
-    test('should export activate method', () => {
+    test('extension should export activate method', () => {
         assert.ok('activate' in extension);
     });
 
-    test('activate should register definition provider', () => {
+    test('extension activate should register definition provider', () => {
         const context = {
             subscriptions: []
         };

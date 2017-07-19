@@ -4,7 +4,7 @@ const { ReferenceProvider } = require('../extension');
 const referenceProvider = new ReferenceProvider();
 
 suite('extractString', () => {
-    test('should return line when no quotes are detected', () =>
+    test('extractString should return line when no quotes are detected', () =>
         workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/test1.js')
             .then(document => {
                 assert.equal(
@@ -14,7 +14,7 @@ suite('extractString', () => {
             })
     );
 
-    test('should return text within quotes', () =>
+    test('extractString should return text within quotes', () =>
         workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/test1.js')
             .then(document => {
                 assert.equal(

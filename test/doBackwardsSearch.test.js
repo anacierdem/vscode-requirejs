@@ -3,7 +3,7 @@ const { ReferenceProvider } = require('../extension');
 const referenceProvider = new ReferenceProvider();
 
 suite('doBackwardsSearch', () => {
-    test('returns offset of character - 1 if character at offset equals searchFor', () => {
+    test('doBackwardsSearch returns offset of character - 1 if character at offset equals searchFor', () => {
         const input = 'foo.baz();';
         const input2 = `require('moduleA').foo();`;
         const expected = 2;
@@ -18,7 +18,7 @@ suite('doBackwardsSearch', () => {
         assert.equal(referenceProvider.doBackwardsSearch(input2, 17, ')'), expected2);
     });
 
-    test('returns false if next character does not equal searchFor', () => {
+    test('doBackwardsSearch returns false if next character does not equal searchFor', () => {
         const input = `define(require => {
                            var moduleB = require('moduleB');
                        });`
@@ -29,7 +29,7 @@ suite('doBackwardsSearch', () => {
         assert.equal(referenceProvider.doBackwardsSearch(input, 61, ')'), expected);
     });
 
-    test('ignores whitespace, tab, newline and carriage return', () => {
+    test('doBackwardsSearch ignores whitespace, tab, newline and carriage return', () => {
         const space = ' ';
         const tab = `   `;
         const newline = "\n";

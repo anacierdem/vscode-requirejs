@@ -3,7 +3,7 @@ const { ReferenceProvider } = require('../extension');
 const referenceProvider = new ReferenceProvider();
 
 suite('removeComments', () => {
-    test('should remove comments from text', () => {
+    test('removeComments should remove comments from text', () => {
         const input = `
             define(['./module'], function (module) {
                 // require();
