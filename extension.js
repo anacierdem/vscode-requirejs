@@ -32,7 +32,7 @@ class ReferenceProvider {
      */
     getRequireOrDefineCodeUntillCharacter(document, line, character) {
         const textBeforeChar = document.getText(new Range(0, 0, line, character));
-        const textBeforeCharWithoutComments = this.removeComments(textBeforeChar);
+        const textBeforeCharWithoutComments = this.stripAllComments(textBeforeChar);
         const lastOccuranceDefine = textBeforeCharWithoutComments.toLowerCase().lastIndexOf('define');
         const lastOccuranceRequire = textBeforeCharWithoutComments.toLowerCase().lastIndexOf('require');
         const lastOccuranceRequireOrDefine = lastOccuranceDefine > -1 ? lastOccuranceDefine : lastOccuranceRequire;
@@ -40,8 +40,51 @@ class ReferenceProvider {
         return textBeforeCharWithoutComments.substr(lastOccuranceRequireOrDefine > -1 ? lastOccuranceRequireOrDefine : 0);
     }
 
+    /**
+     * Check if string contains multiple define or require statements
+     * @param {String} str to search in 
+     * @return {Bool}
+     */
     stringHasMultipleDefineOrRequireStatements(str) {
-        return (str.match(/(require|define)\(/g) || []).length > 1;
+        return (str.match(/(define|require)\(/g) || []).length > 1;
+    }
+
+    /**
+     * Check if needle is a module (path) in define or require statement.
+     * @param {String} needle to search for
+     * @param {String} haystack which might contain needle
+     * @return {Bool}
+     */
+    stringIsPartOfDefineOrRequireStatement(needle, haystack) {
+        const anyCharacterOrNewLine = '.|\\r|\\n';
+        const defineOrRequire = 'define|require';
+        const regex = new RegExp(`(${defineOrRequire})\\((${anyCharacterOrNewLine})*${needle}(${anyCharacterOrNewLine})*{`, 'g');
+        return regex.test(haystack);
+    }
+
+    getTextContainingWord(document, range) {
+        const text = this.stripAllComments(document.getText());
+        const textAtCaret = document.getText(range);
+
+        let textToParse = text;
+
+        if (this.stringHasMultipleDefineOrRequireStatements(text)) {
+            const lineContainingWordAtCaret = document.lineAt(range._start._line).text;
+
+            if (this.stringIsPartOfDefineOrRequireStatement(textAtCaret, lineContainingWordAtCaret)) {
+                textToParse = lineContainingWordAtCaret;
+            } else {
+                textToParse = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
+            }
+        }
+        
+        if (this.stringIsPartOfDefineOrRequireStatement(textAtCaret, textToParse)) {
+            const start = text.indexOf(textToParse);
+            const end = text.indexOf('{', start) + 1;
+            textToParse = text.substr(start, end);
+        }
+
+        return textToParse;
     }
 
     /**
@@ -70,13 +113,31 @@ class ReferenceProvider {
         return result;
     }
 
-    /**
-     * Strip comments from string
+     /**
+     * Strip blocks of comments either writing using forward slashes or doc type style comment
      * @param {String} str
      * @return {String} 
      */
-    removeComments(str) {
-        return (str + "").replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '');
+    stripCommentBlocks(str) {
+        return (str + "").replace(/((^\/\/.*\r?\n?)|(^\/\*[\s\S]*?\*\/\r?\n?))/mg, '');
+    }
+
+     /**
+     * Strip inline comments, comments behind code on a single line.
+     * @param {String} str
+     * @return {String} 
+     */
+    stripInlineComments(str) {
+        return (str + "").replace(/^(.+)((\/\/.*)|(\/\*[\s\S]*?\*\/))/mg, '$1');
+    }
+
+    /**
+     * Strip all comments from string
+     * @param {String} str
+     * @return {String} 
+     */
+    stripAllComments(str) {
+        return this.stripInlineComments(this.stripCommentBlocks(str));
     }
 
     /**
@@ -87,7 +148,7 @@ class ReferenceProvider {
      */
     findConstructor(document, needle, haystack) {
         const test = new RegExp("(?:"+needle+"\\s*=\\s*(?:new)?\\s*)([^\\s(;]*)", "ig");
-        const fullText = document.getText();
+        const fullText = this.stripInlineComments(document.getText());
         const haystackOffset = fullText !== haystack ? fullText.indexOf(haystack) : 0;
         let searchResult;
         
@@ -237,18 +298,8 @@ class ReferenceProvider {
         let moduleList = {};        
 
         if (range) {
-            let textToParse;
+            let textToParse = this.getTextContainingWord(document, range);
             const textAtCaret = document.getText(range);
-            
-            if (this.stringHasMultipleDefineOrRequireStatements(fullText)) {
-                const codeBlockUntillTextAtCaret = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
-                const lineContainingTextAtCaret = document.lineAt(range._start._line).text;
-              
-                textToParse = /\n/.test(codeBlockUntillTextAtCaret) ? codeBlockUntillTextAtCaret : lineContainingTextAtCaret;
-            } else {
-                textToParse = fullText;                
-            }
-
             const requireOrDefineStatement = this.getRequireOrDefineStatement(textToParse);
            
             if (requireOrDefineStatement) {
