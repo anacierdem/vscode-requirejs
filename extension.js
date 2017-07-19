@@ -241,10 +241,10 @@ class ReferenceProvider {
             const textAtCaret = document.getText(range);
             
             if (this.stringHasMultipleDefineOrRequireStatements(fullText)) {
-              const codeBlockUntillTextAtCaret = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
-              const lineContainingTextAtCaret = document.lineAt(range._start._line).text;
+                const codeBlockUntillTextAtCaret = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
+                const lineContainingTextAtCaret = document.lineAt(range._start._line).text;
               
-              textToParse = /\n/.test(codeBlockUntillTextAtCaret) ? codeBlockUntillTextAtCaret : lineContainingTextAtCaret;
+                textToParse = /\n/.test(codeBlockUntillTextAtCaret) ? codeBlockUntillTextAtCaret : lineContainingTextAtCaret;
             } else {
                 textToParse = fullText;                
             }
@@ -303,7 +303,7 @@ class ReferenceProvider {
                             resolve(undefined);
                             return;
                         } else if (constructorName === 'require') {
-                            this.searchModule(currentFilePath, textAtCaret, '', true).then(refs => {
+                            this.searchModule(currentFilePath, textAtCaret, ReferenceProvider.childWord, true).then(refs => {
                                 resolve([refs]);
                                 return;
                             });
