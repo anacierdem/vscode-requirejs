@@ -3,9 +3,9 @@
 // }
 // );
 define([
-    'bar'
+    'moduleB'
 ], function (bar) {
     var foo = bar;
 
-    foo.property //Above foo in comments blocking navigation.
+    foo.prop //Above foo in comments blocking navigation.
 });
