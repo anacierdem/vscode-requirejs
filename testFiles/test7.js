@@ -4,11 +4,11 @@ require(['moduleA', 'moduleB'], function(a, b) {
     foo.baz();
     bar.prop;
 });
-define('myName', ['moduleA', 'moduleB'], function(a, b) {
-    var foo = new a();
+define('myName', ['moduleC', 'moduleD'], function(c, d) {
+    var foo = new c();
     foo.bar();
 });
-require('moduleC').fooBar();
+require('moduleA').foo();
 define(function(require) {
-    var moduleA = require('moduleA');
+    var moduleA = require('moduleB');
 });
