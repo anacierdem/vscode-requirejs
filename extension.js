@@ -283,6 +283,7 @@ class ReferenceProvider {
      * The purpose of this function is finding the position of the last character that is not 
      * the given character excluding newline/spaces. For example when finding the parent of a
      * property.
+     * @param {String} fullText
      * @param {Number} offset offset at which we start the search from
      * @param {String} searchFor a single character to search for
      */
@@ -298,28 +299,6 @@ class ReferenceProvider {
             }
             offset--;
             if (found)
-                return offset;
-        } while(offset >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
-        return false;
-    }
-
-    /**
-     * Searches for a character forward inside fullText discarding spaces, tabs and newlines
-     * @param {Number} offset offset at which we start the search from
-     * @param {String} searchFor a single character to search for
-     */
-    doForwardSearch(fullText, offset, searchFor) {
-        let currentChar;
-        let found = false;
-
-        //Do backwards search
-        do {
-            currentChar = fullText[offset];
-            if(currentChar == searchFor) {
-                found = true;
-            }
-            offset++;
-            if(found)
                 return offset;
         } while(offset >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
         return false;
