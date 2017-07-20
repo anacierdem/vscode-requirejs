@@ -45,11 +45,12 @@ Example;
         "requireModuleSupport.modulePath": "modules"
     }
 
-This will translate to [WORKSPACE_ROOT]\modules
+This will translate to `[WORKSPACE_ROOT]\modules`
 
 It will default to workspace root path if not given.
+You can also use relative paths on require/define calls.
 
-Another option is 
+Another option is;
 
     "requireModuleSupport.onlyNavigateToFile"
 

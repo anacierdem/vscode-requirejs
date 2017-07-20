@@ -193,7 +193,7 @@ class ReferenceProvider {
         let newUriPath;
 
         if (modulePath.match(/^\./i)) {
-            newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, ''), modulePath);
+            newUriPath = path.resolve(currentFilePath, "../" + modulePath);
         } else {
             newUriPath = path.resolve(workspace.rootPath, workspace.getConfiguration("requireModuleSupport").get("modulePath"), modulePath);
         }
@@ -272,9 +272,9 @@ class ReferenceProvider {
             endOffset++;
         }
         return document.getText( new Range(
-                new Position(range._start._line, range._start._character-startOffset+1),
-                new Position(range._start._line, range._start._character+endOffset)
-            ))
+            new Position(range._start._line, range._start._character-startOffset+1),
+            new Position(range._start._line, range._start._character+endOffset)
+        ))
     }
 
     /**
