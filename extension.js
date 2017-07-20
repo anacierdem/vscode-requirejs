@@ -274,7 +274,7 @@ class ReferenceProvider {
         return document.getText( new Range(
             new Position(range._start._line, range._start._character-startOffset+1),
             new Position(range._start._line, range._start._character+endOffset)
-        ))
+        ));
     }
 
     /**
