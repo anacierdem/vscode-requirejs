@@ -207,6 +207,28 @@ class ReferenceProvider {
         return false;
     }
 
+    /**
+     * Searches for a character forward inside fullText discarding spaces, tabs and newlines
+     * @param {Number} offset offset at which we start the search from
+     * @param {String} searchFor a single character to search for
+     */
+    doForwardSearch(fullText, offset, searchFor) {
+        let currentChar;
+        let found = false;
+
+        //Do backwards search
+        do {
+            currentChar = fullText[offset];
+            if(currentChar == searchFor) {
+                found = true;
+            }
+            offset++;
+            if(found)
+                return offset;
+        } while(offset >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
+        return false;
+    }
+
     provideDefinition(document, position) {
         const fullText = document.getText();
         const currentFilePath = document.fileName;
@@ -262,11 +284,29 @@ class ReferenceProvider {
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
                     if(constructors.length && !haveParent) {
+                        let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
                         //Break search in case the instance and the constructor have the same name
-                        if(document.getText(document.getWordRangeAtPosition(constructors[0].range._start)) == textAtCaret) {
+                        if(constructorName == textAtCaret) {
                             resolve(undefined);
                             return;
-                        } else {
+                        }
+                        //Module is used commonJS style - instead of complicating module list extraction, directly navigate
+                        else if(constructorName == 'require') {
+                            let re = /(require)\s*\(\s*(['"]*)/gi;
+                            re.lastIndex = document.offsetAt(constructors[0].range._start);
+                            let stringOffset = re.exec(fullText)[0].length;
+                            var string = this.extractString(document, new vscode.Range(
+                                new vscode.Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset),
+                                new vscode.Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset)
+                            ));
+
+                            this.searchModule(currentFilePath, string, ReferenceProvider.childWord, true).then(refs => {
+                                resolve([refs]);
+                                return;
+                            });
+                        } 
+                        else
+                        {
                             continueFrom = constructors[0].range._start;
                         }
                     } else if(haveParent) { //Have a parent - follow it
