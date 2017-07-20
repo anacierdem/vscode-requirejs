@@ -92,7 +92,7 @@ class ReferenceProvider {
         let newUriPath;
 
         if (!!modulePath.match(/^\./i)) {
-            newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, ''), modulePath);
+            newUriPath = path.resolve(currentFilePath, "../" + modulePath);
         } else {
             newUriPath = path.resolve(vscode.workspace.rootPath, vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath"), modulePath);
         }
@@ -170,17 +170,10 @@ class ReferenceProvider {
         while(char = line[range._start._character+endOffset], char != "'" && char != "\"" && range._start._character+endOffset < line.length) {
             endOffset++;
         }
-<<<<<<< HEAD
-        return document.getText( new Range(
-            new Position(range._start._line, range._start._character-startOffset+1),
-            new Position(range._start._line, range._start._character+endOffset)
-        ))
-=======
         return document.getText( new vscode.Range(
-                new vscode.Position(range._start._line, range._start._character-startOffset+1),
-                new vscode.Position(range._start._line, range._start._character+endOffset)
-            ))
->>>>>>> 68e8f3c... Revert "#17 Add support for multiple require statements"
+            new vscode.Position(range._start._line, range._start._character-startOffset+1),
+            new vscode.Position(range._start._line, range._start._character+endOffset)
+        ))
     }
     /**
      * Searches for a character backwards inside fullText discarding spaces, tabs and newlines
