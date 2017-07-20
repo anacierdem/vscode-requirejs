@@ -304,6 +304,28 @@ class ReferenceProvider {
     }
 
     /**
+     * Searches for a character forward inside fullText discarding spaces, tabs and newlines
+     * @param {Number} offset offset at which we start the search from
+     * @param {String} searchFor a single character to search for
+     */
+    doForwardSearch(fullText, offset, searchFor) {
+        let currentChar;
+        let found = false;
+
+        //Do backwards search
+        do {
+            currentChar = fullText[offset];
+            if(currentChar == searchFor) {
+                found = true;
+            }
+            offset++;
+            if(found)
+                return offset;
+        } while(offset >= 0 && (currentChar == " " || currentChar == "\t" || currentChar == "\n" || currentChar == "\r"));
+        return false;
+    }
+
+     /**
      * @param {VSCODE Document} document 
      * @param {VSCODE Position} position 
      */
@@ -360,22 +382,30 @@ class ReferenceProvider {
                     const constructors = this.findConstructor(document, textAtCaret, textToParse);
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
-                    if (constructors.length && !hasParent) {
-                        let constructorName = document.getText(
-                            document.getWordRangeAtPosition(
-                                new Position(constructors[0].range._start._line, constructors[0].range._start._character)
-                            )
-                        );
+                    if(constructors.length && !hasParent) {
+                        let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
                         //Break search in case the instance and the constructor have the same name
-                        if (constructorName === textAtCaret) {
+                        if(constructorName == textAtCaret) {
                             resolve(undefined);
                             return;
-                        } else if (constructorName === 'require') {
-                            this.searchModule(currentFilePath, textAtCaret, ReferenceProvider.childWord, true).then(refs => {
+                        }
+                        //Module is used commonJS style - instead of complicating module list extraction, directly navigate
+                        else if(constructorName == 'require') {
+                            let re = /(require)\s*\(\s*(['"]*)/gi;
+                            re.lastIndex = document.offsetAt(constructors[0].range._start);
+                            let stringOffset = re.exec(fullText)[0].length;
+                            var string = this.extractString(document, new Range(
+                                new Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset),
+                                new Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset)
+                            ));
+
+                            this.searchModule(currentFilePath, string, ReferenceProvider.childWord, true).then(refs => {
                                 resolve([refs]);
                                 return;
                             });
-                        } else {
+                        } 
+                        else
+                        {
                             continueFrom = constructors[0].range._start;
                         }
                     } else if (hasParent) { //Have a parent - follow it
