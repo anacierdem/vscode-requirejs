@@ -28,13 +28,13 @@ class ReferenceProvider {
     }
 
     /**
-     * Get partial code from require/define statement untill given line and character
+     * Get partial code from require/define statement until given line and character
      * @param {VSCODE Document} document
      * @param {Int} line to stop
      * @param {Int} characterIndex to stop
      * @return {String} substring for given document ending at given line and character and starting at last define or require
      */
-    getRequireOrDefineCodeUntillCharacterIndex(document, line, characterIndex) {
+    getRequireOrDefineCodeUntilCharacterIndex(document, line, characterIndex) {
         const textBeforeChar = document.getText(new Range(0, 0, line, characterIndex));
         const textBeforeCharWithoutComments = this.stripAllComments(textBeforeChar);
         const lastOccuranceDefine = textBeforeCharWithoutComments.toLowerCase().lastIndexOf('define');
@@ -87,7 +87,7 @@ class ReferenceProvider {
             if (this.stringIsPartOfDefineOrRequireStatement(textAtCaret, lineContainingWordAtCaret)) {
                 textToParse = lineContainingWordAtCaret;
             } else {
-                textToParse = this.getRequireOrDefineCodeUntillCharacterIndex(document, range._start._line, range._end._character);
+                textToParse = this.getRequireOrDefineCodeUntilCharacterIndex(document, range._start._line, range._end._character);
             }
         }
         
