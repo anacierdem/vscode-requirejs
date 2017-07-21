@@ -3,6 +3,10 @@ const path = require('path');
 
 class ReferenceProvider {
 
+    constructor() {
+        this.childWord = '';
+    }
+
      /**
      * Remove all white space and new lines from str
      * @param {String} str
@@ -46,7 +50,7 @@ class ReferenceProvider {
      * @return {Bool}
      */
     stringHasMultipleDefineOrRequireStatements(str) {
-        return (str.match(/(define|require)\(/g) || []).length > 1;
+        return (str.match(/^\s*(define|require)\(/gm) || []).length > 1;
     }
 
     /**
@@ -443,8 +447,6 @@ class ReferenceProvider {
         }
     }
 }
-
-ReferenceProvider.childWord = "";
 
 Object.assign(exports, {
     ReferenceProvider,

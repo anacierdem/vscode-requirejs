@@ -24,4 +24,15 @@ suite('stringHasMultipleDefineOrRequireStatements', () => {
 
         assert.ok(!referenceProvider.stringHasMultipleDefineOrRequireStatements(string));
     });
+
+    test('should return false for anonymous define module', () => {
+        const string = `
+            define(function(require) {
+                var moduleA = require('moduleA');
+            });
+        `;
+
+         assert.ok(!referenceProvider.stringHasMultipleDefineOrRequireStatements(string));
+    })
+
 });
