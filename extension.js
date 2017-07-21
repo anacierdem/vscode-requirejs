@@ -62,6 +62,15 @@ class ReferenceProvider {
         return regex.test(haystack);
     }
 
+    /**
+     * Get text containing word in range. Text is stripped of comments 
+     * if text contains multiple define/require statements only module part is returned
+     * or if its is part of define/require only the statement 
+     * 
+     * @param {VSCODE Document} document 
+     * @param {VSCODE Range} range 
+     * @return {String} text
+     */
     getTextContainingWord(document, range) {
         const text = this.stripAllComments(document.getText());
         const textAtCaret = document.getText(range);
@@ -119,7 +128,7 @@ class ReferenceProvider {
      * @return {String} 
      */
     stripCommentBlocks(str) {
-        return (str + "").replace(/((^\/\/.*\r?\n?)|(^\/\*[\s\S]*?\*\/\r?\n?))/mg, '');
+        return (str + "").replace(/(^\s*\/\/.*\r?\n?)|(^\s*\/\*[\s\S]*?\*\/\r?\n?)/mg, '');
     }
 
      /**
@@ -128,7 +137,7 @@ class ReferenceProvider {
      * @return {String} 
      */
     stripInlineComments(str) {
-        return (str + "").replace(/^(.+)((\/\/.*)|(\/\*[\s\S]*?\*\/))/mg, '$1');
+        return (str + "").replace(/(.*\w+.*)((\/\/.*)|(\/\*.*\*\/))/mg, '$1');
     }
 
     /**
