@@ -27,15 +27,15 @@ class ReferenceProvider {
      * Get partial code from require/define statement untill given line and character
      * @param {VSCODE Document} document
      * @param {Int} line to stop
-     * @param {Int} character to stop
+     * @param {Int} characterIndex to stop
      * @return {String} substring for given document ending at given line and character and starting at last define or require
      */
-    getRequireOrDefineCodeUntillCharacter(document, line, character) {
-        const textBeforeChar = document.getText(new Range(0, 0, line, character));
+    getRequireOrDefineCodeUntillCharacterIndex(document, line, characterIndex) {
+        const textBeforeChar = document.getText(new Range(0, 0, line, characterIndex));
         const textBeforeCharWithoutComments = this.stripAllComments(textBeforeChar);
         const lastOccuranceDefine = textBeforeCharWithoutComments.toLowerCase().lastIndexOf('define');
         const lastOccuranceRequire = textBeforeCharWithoutComments.toLowerCase().lastIndexOf('require');
-        const lastOccuranceRequireOrDefine = lastOccuranceDefine > -1 ? lastOccuranceDefine : lastOccuranceRequire;
+        const lastOccuranceRequireOrDefine = lastOccuranceDefine > lastOccuranceRequire ? lastOccuranceDefine : lastOccuranceRequire;
 
         return textBeforeCharWithoutComments.substr(lastOccuranceRequireOrDefine > -1 ? lastOccuranceRequireOrDefine : 0);
     }
@@ -83,7 +83,7 @@ class ReferenceProvider {
             if (this.stringIsPartOfDefineOrRequireStatement(textAtCaret, lineContainingWordAtCaret)) {
                 textToParse = lineContainingWordAtCaret;
             } else {
-                textToParse = this.getRequireOrDefineCodeUntillCharacter(document, range._start._line, range._end._character);
+                textToParse = this.getRequireOrDefineCodeUntillCharacterIndex(document, range._start._line, range._end._character);
             }
         }
         
@@ -299,6 +299,10 @@ class ReferenceProvider {
         return false;
     }
 
+    /**
+     * @param {VSCODE Document} document 
+     * @param {VSCODE Position} position 
+     */
     provideDefinition(document, position) {
         const fullText = document.getText();
         const currentFilePath = document.fileName;
