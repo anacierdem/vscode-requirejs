@@ -3,7 +3,7 @@ const { ReferenceProvider } = require('../extension');
 const sinon = require('sinon');
 const referenceProvider = new ReferenceProvider();
 
-let stripAllComments, stringHasMultipleDefineOrRequireStatements, stringIsPartOfDefineOrRequireStatement, getRequireOrDefineCodeUntilCharacterIndex,
+let stripAllComments, stringHasMultipleDefineOrRequireStatements, stringIsPartOfDefineOrRequireStatement,
     fullText, lineAtText;
 
 const document = { 
