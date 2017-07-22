@@ -92,7 +92,7 @@ class ReferenceProvider {
         let newUriPath;
 
         if (!!modulePath.match(/^\./i)) {
-            newUriPath = path.resolve(currentFilePath.replace(/\\[^\\/]+$/, ''), modulePath);
+            newUriPath = path.resolve(currentFilePath, "../" + modulePath);
         } else {
             newUriPath = path.resolve(vscode.workspace.rootPath, vscode.workspace.getConfiguration("requireModuleSupport").get("modulePath"), modulePath);
         }
@@ -171,24 +171,23 @@ class ReferenceProvider {
             endOffset++;
         }
         return document.getText( new vscode.Range(
-                new vscode.Position(range._start._line, range._start._character-startOffset+1),
-                new vscode.Position(range._start._line, range._start._character+endOffset)
-            ))
+            new vscode.Position(range._start._line, range._start._character-startOffset+1),
+            new vscode.Position(range._start._line, range._start._character+endOffset)
+        ))
     }
-
     /**
      * Searches for a character backwards inside fullText discarding spaces, tabs and newlines
      * Returns the found index-1 or false if any other character is found.
      * The purpose of this function is finding the position of the last character that is not 
      * the given character excluding newline/spaces. For example when finding the parent of a
      * property.
+     * @param {String} fullText
      * @param {Number} offset offset at which we start the search from
      * @param {String} searchFor a single character to search for
      */
     doBackwardsSearch(fullText, offset, searchFor) {
-        let currentChar;
-        let found = false;
-
+        var currentChar;
+        var found = false;
         //Do backwards search
         do {
             currentChar = fullText[offset];
@@ -257,11 +256,29 @@ class ReferenceProvider {
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
                     if(constructors.length && !haveParent) {
+                        let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
                         //Break search in case the instance and the constructor have the same name
-                        if(document.getText(document.getWordRangeAtPosition(constructors[0].range._start)) == textAtCaret) {
+                        if(constructorName == textAtCaret) {
                             resolve(undefined);
                             return;
-                        } else {
+                        }
+                        //Module is used commonJS style - instead of complicating module list extraction, directly navigate
+                        else if(constructorName == 'require') {
+                            let re = /(require)\s*\(\s*(['"]*)/gi;
+                            re.lastIndex = document.offsetAt(constructors[0].range._start);
+                            let stringOffset = re.exec(fullText)[0].length;
+                            var string = this.extractString(document, new vscode.Range(
+                                new vscode.Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset),
+                                new vscode.Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset)
+                            ));
+
+                            this.searchModule(currentFilePath, string, ReferenceProvider.childWord, true).then(refs => {
+                                resolve([refs]);
+                                return;
+                            });
+                        } 
+                        else
+                        {
                             continueFrom = constructors[0].range._start;
                         }
                     } else if(haveParent) { //Have a parent - follow it
