@@ -276,7 +276,6 @@ class ReferenceProvider {
             new Position(range._start._line, range._start._character+endOffset)
         ));
     }
-
     /**
      * Searches for a character backwards inside fullText discarding spaces, tabs and newlines
      * Returns the found index-1 or false if any other character is found.
@@ -288,9 +287,8 @@ class ReferenceProvider {
      * @param {String} searchFor a single character to search for
      */
     doBackwardsSearch(fullText, offset, searchFor) {
-        let currentChar;
-        let found = false;
-
+        var currentChar;
+        var found = false;
         //Do backwards search
         do {
             currentChar = fullText[offset];
