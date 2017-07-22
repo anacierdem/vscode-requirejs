@@ -287,8 +287,8 @@ class ReferenceProvider {
      * @param {String} searchFor a single character to search for
      */
     doBackwardsSearch(fullText, offset, searchFor) {
-        var currentChar;
-        var found = false;
+        let currentChar;
+        let found = false;
         //Do backwards search
         do {
             currentChar = fullText[offset];
@@ -371,7 +371,7 @@ class ReferenceProvider {
                             let re = /(require)\s*\(\s*(['"]*)/gi;
                             re.lastIndex = document.offsetAt(constructors[0].range._start);
                             let stringOffset = re.exec(fullText)[0].length;
-                            var string = this.extractString(document, new Range(
+                            let string = this.extractString(document, new Range(
                                 new Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset),
                                 new Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset)
                             ));
