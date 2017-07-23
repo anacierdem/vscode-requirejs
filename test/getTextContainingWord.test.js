@@ -41,7 +41,7 @@ suite('getTextContainingWord', () => {
         assert.equal(referenceProvider.getTextContainingWord(document, range), fullText);
     });
 
-    test('should return full text when text has single define and string is not part of define', () => {
+    test('should return define/require statement when text has single define and string is part of define', () => {
         stripAllComments.returnsArg(0);
         stringHasMultipleDefineOrRequireStatements.returns(false);
         stringIsPartOfDefineOrRequireStatement.returns(true);
@@ -55,11 +55,26 @@ suite('getTextContainingWord', () => {
         assert.equal(referenceProvider.getTextContainingWord(document, range), expected);
     });
     
+    test('should return require statement when text has require and directly calls method', () => {
+        stripAllComments.returnsArg(0);
+        stringHasMultipleDefineOrRequireStatements.returns(false);
+        stringIsPartOfDefineOrRequireStatement.returns(true);
+
+        fullText = `require('moduleA').foo();`;
+                    
+        const expected = `require('moduleA')`
+
+        assert.equal(referenceProvider.getTextContainingWord(document, range), expected);
+    });
+
     test('should return line containing word when multiple define or require statements in text and word is part of define or require', () => {
         stripAllComments.returnsArg(0);
         stringHasMultipleDefineOrRequireStatements.returns(true);
         stringIsPartOfDefineOrRequireStatement.returns(true);
 
+        fullText = `define(['./module'], function (module) {
+                        const foo;
+                    });`
         lineAtText = `define(['./module'], function (module) {`;
 
         assert.equal(referenceProvider.getTextContainingWord(document, range), lineAtText);

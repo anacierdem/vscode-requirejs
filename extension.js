@@ -95,6 +95,10 @@ class ReferenceProvider {
             const start = text.indexOf(textToParse);
             const end = text.indexOf('{', start) + 1;
             textToParse = text.substr(start, end);
+
+            if (!textToParse && text.startsWith('require')) {
+                textToParse = text.substr(start, text.indexOf(').') + 1);
+            }
         }
 
         return textToParse;
@@ -419,7 +423,7 @@ class ReferenceProvider {
                             }
                         }
 
-                        if (isModule) {
+                        if (isModule || textToParse.startsWith('require') && tmpModuleName) {
                             this.searchModule(currentFilePath, tmpModuleName, "", true).then(refs => {
                                 resolve([refs]);
                                 return;
