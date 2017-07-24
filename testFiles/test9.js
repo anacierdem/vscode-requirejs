@@ -1,11 +1,10 @@
-// define(['...'], function(foo) {
-//     var bar = foo;
-// }
-// );
-define([
-    'moduleB'
-], function (bar) {
-    var foo = bar;
+require(['moduleA', 'moduleB'], function(a, b) {
+    var foo = a;
+    var bar = b;
+    foo.baz();
+    bar.prop;
 
-    foo.prop //Above foo in comments blocking navigation.
+    if(true) {
+        
+    }
 });
