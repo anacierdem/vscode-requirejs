@@ -37,9 +37,12 @@ class ReferenceProvider {
     getRequireOrDefineCodeUntilCharacterIndex(document, line, characterIndex) {
         const textBeforeChar = document.getText(new Range(0, 0, line, characterIndex));
         const textBeforeCharWithoutComments = this.stripAllComments(textBeforeChar);
-        const lastOccuranceDefine = textBeforeCharWithoutComments.toLowerCase().lastIndexOf('define');
-        const lastOccuranceRequire = textBeforeCharWithoutComments.toLowerCase().lastIndexOf('require');
-        const lastOccuranceRequireOrDefine = lastOccuranceDefine > lastOccuranceRequire ? lastOccuranceDefine : lastOccuranceRequire;
+        const textLowerCased = textBeforeCharWithoutComments.toLowerCase();
+        const lastOccuranceDefine = /define\s?\((?![\s\S]*define\s?\()/.exec(textLowerCased);
+        const lastOccuranceRequire = /require\s?\((?![\s\S]*require\s?\()/.exec(textLowerCased);
+        const defineIndex = lastOccuranceDefine && lastOccuranceDefine.index || -1;
+        const requireIndex = lastOccuranceRequire && lastOccuranceRequire.index || -1;
+        const lastOccuranceRequireOrDefine = defineIndex > requireIndex ? defineIndex : requireIndex;
 
         return textBeforeCharWithoutComments.substr(lastOccuranceRequireOrDefine > -1 ? lastOccuranceRequireOrDefine : 0);
     }

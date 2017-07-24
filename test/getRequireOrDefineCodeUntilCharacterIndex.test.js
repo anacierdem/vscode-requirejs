@@ -35,4 +35,19 @@ suite('getRequireOrDefineCodeUntilCharacterIndex', () => {
         
         assert.equal(referenceProvider.getRequireOrDefineCodeUntilCharacterIndex(document, 0, 0), expected);
     });
+
+    test('should return end off string until define for anonymous module', () => {
+        const document = {
+            getText() {
+                return `
+                    define(function(require) {
+                        var moduleA`;
+            }
+        };
+        const expected = `define(function(require) {
+                        var moduleA`;
+        
+        assert.equal(referenceProvider.getRequireOrDefineCodeUntilCharacterIndex(document, 0, 0), expected);
+    });
+
 });
