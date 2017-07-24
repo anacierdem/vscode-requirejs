@@ -63,9 +63,23 @@ class ReferenceProvider {
      * @return {Bool}
      */
     stringIsPartOfDefineOrRequireStatement(needle, haystack) {
-        const anyCharacterOrNewLine = '.|\\r|\\n';
-        const defineOrRequire = 'define|require';
-        const regex = new RegExp(`(${defineOrRequire})\\((${anyCharacterOrNewLine})*${needle}(${anyCharacterOrNewLine})*(\\)\\.|{)`, 'g');
+        const regex = new RegExp([
+            '(define|require)\\s?\\(',
+            '(',
+                '(',
+                    '\\[',
+                        '[\\s\\S]*?',
+                        needle,
+                        '[\\s\\S]*?',
+                    '\\]',
+                ')|(',
+                    '[\\s\\S]*?',
+                    needle,
+                    '.*\\)',
+                    '(\\s?{|\\.)',
+                ')',
+            ')'
+        ].join(''), 'g');
         return regex.test(haystack);
     }
 

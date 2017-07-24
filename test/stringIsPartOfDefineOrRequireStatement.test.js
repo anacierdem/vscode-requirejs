@@ -28,7 +28,16 @@ suite('stringIsPartOfDefineOrRequireStatement', () => {
         assert.ok(referenceProvider.stringIsPartOfDefineOrRequireStatement('moduleC', input));
     });
 
-    test('should return true for multiline require statement', () => {
+    test('should return true for multiline require statement needle on first line', () => {
+        const input = `
+        require(['moduleA', 
+            'moduleB'], function(a, b) {
+        });`
+        
+        assert.ok(referenceProvider.stringIsPartOfDefineOrRequireStatement('moduleA', input));
+    });
+
+    test('should return true for multiline require statement needle on second line', () => {
         const input = `
         require(['moduleA', 
             'moduleB'], function(a, b) {
@@ -41,5 +50,17 @@ suite('stringIsPartOfDefineOrRequireStatement', () => {
         const input = `require('moduleC').fooBar();`;
         
         assert.ok(!referenceProvider.stringIsPartOfDefineOrRequireStatement('fooBar', input));
+    });
+
+    test('should return false, regex should match non greedy', () => {
+        const input = `require(['moduleA', 'moduleB'], function(a, b) {
+            bar.prop;
+
+            function(a, b) {
+                
+            }
+        });`;
+        
+        assert.ok(!referenceProvider.stringIsPartOfDefineOrRequireStatement('prop', input));
     });
 });
