@@ -292,7 +292,7 @@ class ReferenceProvider {
         while(char = line[range._start._character+endOffset], char != "'" && char != "\"" && range._start._character+endOffset < line.length) {
             endOffset++;
         }
-        return document.getText( new Range(
+        return document.getText(new Range(
             new Position(range._start._line, range._start._character-startOffset+1),
             new Position(range._start._line, range._start._character+endOffset)
         ));
@@ -346,7 +346,7 @@ class ReferenceProvider {
             const modulePath = textAtCaret in moduleList ? moduleList[textAtCaret] : null;
 
             //We matched a module (textAtCaret is a module)
-            if(modulePath) {
+            if (modulePath) {
                 let searchFor = "";
                 let stopSearchingFurther;
 
@@ -380,30 +380,25 @@ class ReferenceProvider {
                     const constructors = this.findConstructor(document, textAtCaret, textToParse);
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
-                    if(constructors.length && !hasParent) {
+                    if (constructors.length && !hasParent) {
                         let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
                         //Break search in case the instance and the constructor have the same name
-                        if(constructorName == textAtCaret) {
+                        if (constructorName == textAtCaret) {
                             resolve(undefined);
                             return;
                         }
                         //Module is used commonJS style - instead of complicating module list extraction, directly navigate
-                        else if(constructorName == 'require') {
-                            let re = /(require)\s*\(\s*(['"]*)/gi;
-                            re.lastIndex = document.offsetAt(constructors[0].range._start);
-                            let stringOffset = re.exec(fullText)[0].length;
-                            let string = this.extractString(document, new Range(
-                                new Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset),
-                                new Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset)
-                            ));
+                        else if (constructorName == 'require') {
+                            const { _line, _character } = constructors[0].range._start;
+                            const searchForLength = /(require)\s*\(\s*(['"]*)/gi.exec(fullText)[0].length;
+                            const charEndPosition = _character + searchForLength;
+                            const searchFor = this.extractString(document, new Range(_line, charEndPosition, _line, charEndPosition));
 
-                            this.searchModule(currentFilePath, string, ReferenceProvider.childWord, true).then(refs => {
+                            this.searchModule(currentFilePath, searchFor, ReferenceProvider.childWord, true).then(refs => {
                                 resolve([refs]);
                                 return;
                             });
-                        } 
-                        else
-                        {
+                        }  else {
                             continueFrom = constructors[0].range._start;
                         }
                     } else if (hasParent) { //Have a parent - follow it
