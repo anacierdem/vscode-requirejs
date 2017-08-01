@@ -63,4 +63,14 @@ suite('stringIsPartOfDefineOrRequireStatement', () => {
         
         assert.ok(!referenceProvider.stringIsPartOfDefineOrRequireStatement('prop', input));
     });
+
+    test('should return false if code is used within if statement', () => {
+        const input = `require(['moduleA', 'moduleB'], function(a, b) {
+            if (foo.baz() == 3) {
+                
+            }
+        });`;
+
+        assert.ok(!referenceProvider.stringIsPartOfDefineOrRequireStatement('baz', input));
+    });
 });
