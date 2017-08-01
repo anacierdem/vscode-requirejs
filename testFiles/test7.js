@@ -8,7 +8,7 @@ define('myName', ['moduleC', 'moduleD'], function(c, d) {
     var foo = new c();
     foo.bar();
 });
-require('moduleA').foo();
+require('moduleC').foo();
 define(function(require) {
     var moduleA = require('moduleB');
 });
