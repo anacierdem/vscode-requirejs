@@ -5,7 +5,7 @@ const referenceProvider = new ReferenceProvider();
 
 suite('extractString', () => {
     test('extractString should return line when no quotes are detected', () =>
-        workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/test1.js')
+        workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/basic.js')
             .then(document => {
                 assert.equal(
                     referenceProvider.extractString(document, new Range(1, 4, 1, 15)),
@@ -15,7 +15,7 @@ suite('extractString', () => {
     );
 
     test('extractString should return text within quotes', () =>
-        workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/test1.js')
+        workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/immediatelyInvoked.js')
             .then(document => {
                 assert.equal(
                     referenceProvider.extractString(document, new Range(0, 11, 0, 12)),
