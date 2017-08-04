@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const path = require('path');
+const fs = require('fs');
 
 class ReferenceProvider {
 
@@ -128,6 +129,11 @@ class ReferenceProvider {
         if (!newUriPath.match(/\.js$/i)) newUriPath += '.js';
 
         const newUri = vscode.Uri.file(newUriPath);
+
+        if (!fs.existsSync(newUri.fsPath)) {
+            return new Promise(resolve => resolve(undefined));
+        }
+
         const newDocument = vscode.workspace.openTextDocument(newUri);
 
         return new Promise(resolve => {
