@@ -64,7 +64,7 @@ class ReferenceProvider {
      * @return {String} 
      */
     findComments(str) {
-        var comments = /^[ \t]*(\/\*)[^]*(\*\/)|(\/\/)/mg;
+        var comments = /(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(\/\/.*)/mg;
 
         let list = [];
         let searchResult;
