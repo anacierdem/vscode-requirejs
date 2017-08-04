@@ -8,9 +8,22 @@ class ReferenceProvider {
      * @param {String} str
      * @return {String} 
      */
-    getRequireOrDefineStatement(str) {
-        const match = /(define|require)\s*\(([^)]*)/gi.exec(str + "");
-        return match && match[0] || null;
+    getRequireOrDefineStatements(str) {
+        let match = /^[ \t]*(define|require)\s*\(([^)]*)/mgi;
+
+        let list = [];
+        let searchResult;
+        do {
+            searchResult = match.exec(str + "");
+            if (searchResult && searchResult[0]) {
+                list.push({
+                    start: searchResult.index,
+                    contents: searchResult[0]
+                })
+            }
+        } while (searchResult);
+        
+        return list;
     }
 
     /**
@@ -46,12 +59,26 @@ class ReferenceProvider {
     }
 
     /**
-     * Strip comments from string
+     * finds commented out regions of string
      * @param {String} str
      * @return {String} 
      */
-    removeComments(str) {
-        return (str + "").replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '');
+    findComments(str) {
+        var comments = /^[ \t]*(\/\*)[^]*(\*\/)|(\/\/)/mg;
+
+        let list = [];
+        let searchResult;
+        do {
+            searchResult = comments.exec(str + "");
+            if (searchResult && searchResult[0]) {
+                list.push({
+                    start: searchResult.index,
+                    end: searchResult.index + searchResult[0].length
+                })
+            }
+        } while (searchResult);
+
+        return list;
     }
 
     /**
@@ -59,9 +86,11 @@ class ReferenceProvider {
      * @param {VSCode Document} document
      * @param {String} needle
      * @param {String} haystack
+     * @param {Number} startOffset
      */
-    findConstructor(document, needle, haystack) {
+    findConstructor(document, needle, haystack, startOffset = 0) {
         const test = new RegExp("(?:"+needle+"\\s*=\\s*(?:new)?\\s*)([^\\s(;]*)", "ig");
+        test.lastIndex = startOffset;
         let searchResult;
         
         const references = [];
@@ -201,20 +230,45 @@ class ReferenceProvider {
         return false;
     }
 
+    findCurrentDefineRange(requireOrDefineStatements, caretPosition) {
+        let foundSection = null;
+        for(let i = 0; i < requireOrDefineStatements.length; i++) {
+            if(caretPosition > requireOrDefineStatements[i].start) {
+                foundSection = requireOrDefineStatements[i];
+            }
+        }
+        return foundSection;
+    }
+
+    checkIfCommentedOut(commentRanges, position) {
+        for(let i = 0; i < commentRanges.length; i++) {
+            if(position >= commentRanges[i].start && position <= commentRanges[i].end) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     provideDefinition(document, position) {
         const fullText = document.getText();
         const currentFilePath = document.fileName;
         const range = document.getWordRangeAtPosition(position);
 
         let moduleList;        
+        let requireOrDefineStatements;
+        let foundSection = null;
 
         if(range) {
             const textAtCaret = document.getText(range);
-            const fullTextWithoutComments = this.removeComments(fullText);
-            const requireOrDefineStatement = this.getRequireOrDefineStatement(fullTextWithoutComments);
+            const caretPosition = document.offsetAt(range._start);
+            const commentRanges = this.findComments(fullText);
+            requireOrDefineStatements = this.getRequireOrDefineStatements(fullText);
 
-            if(requireOrDefineStatement) {
-                moduleList = this.getModulesWithPathFromRequireOrDefine(requireOrDefineStatement);
+            if(requireOrDefineStatements.length) {
+                foundSection = this.findCurrentDefineRange(requireOrDefineStatements, caretPosition);
+                if(foundSection && !this.checkIfCommentedOut(commentRanges, foundSection.start)) {
+                    moduleList = this.getModulesWithPathFromRequireOrDefine(foundSection.contents);
+                }
             }
 
             let modulePath;
@@ -252,7 +306,8 @@ class ReferenceProvider {
                         tmpModuleName = this.extractString(document, range)
                     }
 
-                    const constructors = this.findConstructor(document, textAtCaret, fullText);
+                    let offset = foundSection ? foundSection.start : 0;
+                    const constructors = this.findConstructor(document, textAtCaret, fullText, offset);
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
                     if(constructors.length && !haveParent) {
