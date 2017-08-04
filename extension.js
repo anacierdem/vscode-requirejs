@@ -4,7 +4,7 @@ const path = require('path');
 class ReferenceProvider {
 
     /**
-     * Get a require or define statement from string
+     * Return array containing object with start index of require/define and result
      * @param {String} str
      * @return {String} 
      */
@@ -45,7 +45,7 @@ class ReferenceProvider {
         m = params.exec(str);
 
         if(m) {
-            var test = /([^\s,]+)/g;
+            const test = /([^\s,]+)/g;
             result = m[0].slice(m[0].indexOf('(')+1).match(test);
         }
 
@@ -64,7 +64,7 @@ class ReferenceProvider {
      * @return {String} 
      */
     findComments(str) {
-        var comments = /(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(\/\/.*)/mg;
+        const comments = /(\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\/)|(\/\/.*)/mg;
 
         let list = [];
         let searchResult;
@@ -215,8 +215,8 @@ class ReferenceProvider {
      * @param {String} searchFor a single character to search for
      */
     doBackwardsSearch(fullText, offset, searchFor) {
-        var currentChar;
-        var found = false;
+        let currentChar;
+        let found = false;
         //Do backwards search
         do {
             currentChar = fullText[offset];
@@ -322,7 +322,7 @@ class ReferenceProvider {
                             let re = /(require)\s*\(\s*(['"]*)/gi;
                             re.lastIndex = document.offsetAt(constructors[0].range._start);
                             let stringOffset = re.exec(fullText)[0].length;
-                            var string = this.extractString(document, new vscode.Range(
+                            const string = this.extractString(document, new vscode.Range(
                                 new vscode.Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset),
                                 new vscode.Position(constructors[0].range._start._line, constructors[0].range._start._character + stringOffset)
                             ));
