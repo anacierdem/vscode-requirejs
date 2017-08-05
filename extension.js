@@ -16,10 +16,15 @@ class ReferenceProvider {
         do {
             searchResult = match.exec(str + "");
             if (searchResult && searchResult[0]) {
+                //Set previous item's length
+                if(list[list.length-1])
+                    list[list.length-1].end = searchResult.index;
+                    
                 list.push({
                     start: searchResult.index,
+                    end: Infinity,
                     contents: searchResult[0]
-                })
+                });
             }
         } while (searchResult);
         
@@ -88,7 +93,7 @@ class ReferenceProvider {
      * @param {String} haystack
      * @param {Number} startOffset
      */
-    findConstructor(document, needle, haystack, startOffset = 0) {
+    findConstructor(document, needle, haystack, startOffset = 0, endOffset = Infinity) {
         const test = new RegExp("(?:"+needle+"\\s*=\\s*(?:new)?\\s*)([^\\s(;]*)", "ig");
         test.lastIndex = startOffset;
         let searchResult;
@@ -97,7 +102,7 @@ class ReferenceProvider {
 
         do {
             searchResult = test.exec(haystack);
-            if (searchResult) {
+            if (searchResult && searchResult.index <= endOffset) {
                 const newPosition = document.positionAt(searchResult.index + searchResult[0].length);
 
                 const range = document.getWordRangeAtPosition(newPosition);
@@ -233,7 +238,8 @@ class ReferenceProvider {
     findCurrentDefineRange(requireOrDefineStatements, caretPosition) {
         let foundSection = null;
         for(let i = 0; i < requireOrDefineStatements.length; i++) {
-            if(caretPosition > requireOrDefineStatements[i].start) {
+            if(caretPosition >= requireOrDefineStatements[i].start &&
+                (!requireOrDefineStatements[i].end || caretPosition <= requireOrDefineStatements[i].end)) {
                 foundSection = requireOrDefineStatements[i];
             }
         }
@@ -306,8 +312,9 @@ class ReferenceProvider {
                         tmpModuleName = this.extractString(document, range)
                     }
 
-                    let offset = foundSection ? foundSection.start : 0;
-                    const constructors = this.findConstructor(document, textAtCaret, fullText, offset);
+                    let offsetStart = foundSection ? foundSection.start : 0;
+                    let offsetEnd = foundSection ? foundSection.end : Infinity;
+                    const constructors = this.findConstructor(document, textAtCaret, fullText, offsetStart, offsetEnd);
                     //TODO: also consider window. defined globals
                     //Dont have a parent and have a constructor, follow the constructor
                     if(constructors.length && !haveParent) {

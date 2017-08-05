@@ -10,6 +10,7 @@ suite('getRequireOrDefineStatements', () => {
         `;
         const expected = [{ 
             start: 1,
+            end: Infinity,
             contents: `            define(['./module'], function (module`
         }];
         
@@ -20,6 +21,7 @@ suite('getRequireOrDefineStatements', () => {
         const input = `define(function(require) { var moduleA = require('moduleA'); moduleA.foo() });`;
         const expected = [{ 
             start: 0,
+            end: Infinity,
             contents: `define(function(require`
         }];
         
@@ -30,6 +32,7 @@ suite('getRequireOrDefineStatements', () => {
         const input = `define(require => { });`;
         const expected = [{ 
             start: 0,
+            end: Infinity,
             contents: `define(require => { }`
         }];
         
@@ -41,6 +44,7 @@ suite('getRequireOrDefineStatements', () => {
         const input = `define(['./module'], module => { });`;
         const expected = [{ 
             start: 0,
+            end: Infinity,
             contents: `define(['./module'], module => { }`
         }];
         
@@ -51,6 +55,7 @@ suite('getRequireOrDefineStatements', () => {
         const input = `define(['./module', './module2'], (module, module2) => { });`;
         const expected = [{ 
             start: 0,
+            end: Infinity,
             contents: `define(['./module', './module2'], (module, module2`
         }];
         
@@ -69,6 +74,7 @@ suite('getRequireOrDefineStatements', () => {
         `;
         const expected = [{ 
             start: 1,
+            end: Infinity,
             contents: `            define([
                 'moduleA', 
                 'moduleB'
@@ -85,6 +91,7 @@ suite('getRequireOrDefineStatements', () => {
         `;
         const expected = [{ 
             start: 1,
+            end: Infinity,
             contents: `            define('myName', ['moduleA', 'moduleB'], function(a, b`
         }];
         
@@ -99,6 +106,7 @@ suite('getRequireOrDefineStatements', () => {
         `;
         const expected = [{ 
             start: 1,
+            end: Infinity,
             contents: `            require(['moduleA', 'moduleB'], function(a, b`
         }];
         
@@ -112,6 +120,7 @@ suite('getRequireOrDefineStatements', () => {
         `;
         const expected = [{ 
             start: 1,
+            end: Infinity,
             contents: `            require(['moduleA', 'moduleB'], (a, b`
         }];
         
@@ -128,10 +137,13 @@ suite('getRequireOrDefineStatements', () => {
         `;
         const expected = [{ 
             start: 1,
+            end: Infinity,
             contents: `            require(['moduleA', 
                         'moduleB'], function(a, b`
         }];
         
         assert.deepEqual(referenceProvider.getRequireOrDefineStatements(input), expected);
     });
+
+    //TODO: Add tests for multiple require/define cases
 });
