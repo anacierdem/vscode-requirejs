@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.0] - 2017-05-08
+### Added
+
+- Added support for multiple require/define statements in a single file.
+- This version covers all important use cases.
+
 ## [0.0.33] - 2017-20-07
 ### Changed
 
