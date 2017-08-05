@@ -20,3 +20,4 @@ install:
 
 script:
   - npm test --silent
+  - eslint extension.js test
