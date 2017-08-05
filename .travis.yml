@@ -21,3 +21,6 @@ install:
 script:
   - npm test --silent
   - eslint extension.js test
+
+after_script:
+  - bash <(curl -s https://codecov.io/bash)
