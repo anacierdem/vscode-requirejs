@@ -20,4 +20,4 @@ install:
 
 script:
   - npm test --silent
-  - npm lint
+  - npm run lint
