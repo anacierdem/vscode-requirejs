@@ -42,10 +42,10 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "eslint": "^3.6.0",
-    "mocha": "^2.3.3",
+    "eslint": "^4.4.0",
+    "mocha": "^3.5.0",
     "proxyquire": "^1.8.0",
-    "sinon": "^2.3.7",
+    "sinon": "^3.0.0",
     "typescript": "^2.0.3",
     "vscode": "^1.0.0"
   }
