@@ -1,4 +1,7 @@
 {
+    "extends": [
+        "./node_modules/goodparts/.eslintrc.js"
+    ],
     "env": {
         "browser": false,
         "commonjs": true,

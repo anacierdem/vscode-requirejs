@@ -1,7 +1,7 @@
 # Require Module Support README
 
 [![Build Status](https://api.travis-ci.org/anacierdem/vscode-requirejs.svg?branch=master)](https://travis-ci.org/anacierdem/vscode-requirejs)
-
+[![JavaScript Style Guide: Good Parts](https://img.shields.io/badge/code%20style-goodparts-brightgreen.svg?style=flat)](https://github.com/dwyl/goodparts "JavaScript The Good Parts")
 ## Features
 
 Provides goto definition functionality for require js modules.
