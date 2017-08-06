@@ -1,6 +1,8 @@
 # Require Module Support README
 
 [![Build Status](https://api.travis-ci.org/anacierdem/vscode-requirejs.svg?branch=master)](https://travis-ci.org/anacierdem/vscode-requirejs)
+[![dependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/status.svg)](https://david-dm.org/anacierdem/vscode-requirejs)
+[![devDependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/dev-status.svg)](https://david-dm.org/anacierdem/vscode-requirejs?type=dev)
 
 ## Features
 
