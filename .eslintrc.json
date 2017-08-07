@@ -1,4 +1,7 @@
 {
+    "extends": [
+        "./node_modules/goodparts/.eslintrc.js"
+    ],
     "env": {
         "browser": false,
         "commonjs": true,
@@ -13,14 +16,18 @@
         "sourceType": "module"
     },
     "rules": {
-        "no-const-assign": "warn",
-        "no-this-before-super": "warn",
-        "no-undef": "warn",
-        "no-unreachable": "warn",
-        "no-unused-vars": "warn",
-        "constructor-super": "warn",
-        "valid-typeof": "warn",
-        "no-var": "error"
+        "no-var": "error",
+        "max-lines": "warn",
+        "max-len": [
+            "error",
+            { 
+                "code": 120,
+                "ignoreComments": true 
+            }
+        ],
+        "max-depth": ["warn"],
+        "complexity": ["warn"],
+        "no-undefined": "off"
     },
     "globals": {
         "resolve": true
