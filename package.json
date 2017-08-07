@@ -42,9 +42,12 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
+    "decache": "^4.1.0",
     "eslint": "^4.4.0",
+    "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
     "proxyquire": "^1.8.0",
+    "remap-istanbul": "^0.9.5",
     "sinon": "^3.0.0",
     "typescript": "^2.4.2",
     "vscode": "^1.0.0"
