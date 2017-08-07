@@ -24,7 +24,7 @@ suite('extension', () => {
         assert.deepEqual(
             registerDefinitionProviderStub.getCall(0).args,
             [
-                { scheme: 'file' },
+                'javascript',
                 new extension.ReferenceProvider()
             ]
         )
