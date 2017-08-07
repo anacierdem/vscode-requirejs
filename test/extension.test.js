@@ -6,22 +6,22 @@ const vscodeStub = { languages: { registerDefinitionProvider: registerDefinition
 const extension = proxyquire('../extension', { vscode: vscodeStub });
 
 suite('extension', () => {
-  test('should export activate method', () => {
-    assert.ok('activate' in extension);
-  });
+	test('should export activate method', () => {
+		assert.ok('activate' in extension);
+	});
 
-  test('activate should register definition provider', () => {
-    const context = { subscriptions: [] };
+	test('activate should register definition provider', () => {
+		const context = { subscriptions: [] };
 
-    extension.activate(context);
+		extension.activate(context);
 
-    assert.equal(context.subscriptions.length, 1);
-    assert.deepEqual(
-            registerDefinitionProviderStub.getCall(0).args,
-            [
-                'javascript',
-                new extension.ReferenceProvider()
-            ]
-        )
-    });
+		assert.equal(context.subscriptions.length, 1);
+		assert.deepEqual(
+			registerDefinitionProviderStub.getCall(0).args,
+			[
+				'javascript',
+				new extension.ReferenceProvider()
+			]
+		);
+	});
 });

@@ -16,10 +16,12 @@
         "sourceType": "module"
     },
     "rules": {
+        "indent": ["error", "tab"],
+        "no-tabs": "off",
         "no-var": "error",
         "max-lines": "warn",
         "max-len": [
-            "error",
+            "warn",
             { 
                 "code": 120,
                 "ignoreComments": true 
