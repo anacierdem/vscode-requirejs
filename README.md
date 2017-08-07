@@ -2,6 +2,8 @@
 
 [![Build Status](https://api.travis-ci.org/anacierdem/vscode-requirejs.svg?branch=master)](https://travis-ci.org/anacierdem/vscode-requirejs)
 [![codecov](https://codecov.io/gh/anacierdem/vscode-requirejs/branch/master/graph/badge.svg)](https://codecov.io/gh/anacierdem/vscode-requirejs)
+[![dependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/status.svg)](https://david-dm.org/anacierdem/vscode-requirejs)
+[![devDependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/dev-status.svg)](https://david-dm.org/anacierdem/vscode-requirejs?type=dev)
 
 ## Features
 
