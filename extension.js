@@ -454,7 +454,7 @@ Object.assign(exports, {
   activate (context) {
     context.subscriptions.push(
             vscode.languages.registerDefinitionProvider(
-                { scheme: 'file' },
+                'javascript',
                 new ReferenceProvider()
             )
         );

@@ -18,10 +18,10 @@ suite('extension', () => {
     assert.equal(context.subscriptions.length, 1);
     assert.deepEqual(
             registerDefinitionProviderStub.getCall(0).args,
-      [
-                { scheme: 'file' },
-        new extension.ReferenceProvider()
-      ]
-        );
-  });
+            [
+                'javascript',
+                new extension.ReferenceProvider()
+            ]
+        )
+    });
 });

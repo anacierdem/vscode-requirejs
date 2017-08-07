@@ -2,7 +2,7 @@
   "name": "require-js",
   "displayName": "Require Module Support",
   "description": "Adds require.js AMD module goto definition support.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "lici",
   "icon": "logo.png",
   "engines": {
@@ -43,12 +43,15 @@
     "lint": "node ./node_modules/eslint/bin/eslint extension.js test"
   },
   "devDependencies": {
-    "eslint": "^3.6.0",
     "goodparts": "^1.2.1",
-    "mocha": "^2.3.3",
+    "decache": "^4.1.0",
+    "eslint": "^4.4.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.0",
     "proxyquire": "^1.8.0",
-    "sinon": "^2.3.7",
-    "typescript": "^2.0.3",
+    "remap-istanbul": "^0.9.5",
+    "sinon": "^3.0.0",
+    "typescript": "^2.4.2",
     "vscode": "^1.0.0"
   }
 }
