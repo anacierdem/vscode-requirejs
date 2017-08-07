@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.1] - 2017-07-08
+### Changed
+
+- Now, the extension only runs for JavaScript files.
+
 ## [0.1.0] - 2017-05-08
 ### Added
 
@@ -11,11 +16,11 @@
 
 - CommonJS style requires inside the requireJS blocks are now supported.
 
-    define(function(require) {
-        var moduleB = require('moduleB');
-        moduleB.prop;
-    });
-
+        define(function(require) {
+            var moduleB = require('moduleB');
+            moduleB.prop;
+        });
+    
 ## [0.0.32] - 2017-06-07
 ### Changed
 
