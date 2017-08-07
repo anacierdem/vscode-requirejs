@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.1] - 2017-07-08
+### Changed
+
+- Now, the extension only runs for JavaScript files.
+
 ## [0.1.0] - 2017-05-08
 ### Added
 
