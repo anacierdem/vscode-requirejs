@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.2] - 2017-14-08
+### Changed
+
+- Fixed a bug causing 100% CPU usage when trying to navigate on an property assigned the the main object such as `el = el.offsetParent`.
+
 ## [0.1.1] - 2017-07-08
 ### Changed
 
