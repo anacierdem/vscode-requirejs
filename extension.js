@@ -356,8 +356,8 @@ class ReferenceProvider {
 					let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
 					// Break search in case the instance and the constructor have the same name
 
-					if (constructorName === textAtCaret || 
-						constructorName === ReferenceProvider.childWord) {
+					if (constructorName === textAtCaret
+						|| constructorName === ReferenceProvider.childWord) {
 						resolve(undefined);
 
 						return;
