@@ -432,7 +432,7 @@ class ReferenceProvider {
 					vscode.commands.executeCommand('vscode.executeDefinitionProvider', document.uri, continueFrom).then(refs => {
 						for (let i = refs.length - 1; i >= 0; i--) {
 							// Discard if same file
-							if (refs[i].uri._path === document.uri._path) {
+							if (refs[i].uri.fsPath === document.uri.fsPath) {
 								refs.splice(i, 1);
 							}
 						}
