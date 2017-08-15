@@ -101,7 +101,7 @@ class ReferenceProvider {
 		 * @returns {Array} Array containing references
 		 */
 	findConstructor (document, needle, haystack, startOffset = 0, endOffset = Infinity) {
-		const test = new RegExp('(?:' + needle + '\\s*=\\s*(?:new)?\\s*)([^\\s(;]*)', 'ig');
+		const test = new RegExp('\\b(?:' + needle + '\\s*=\\s*(?:new)?\\s*)([^\\s(;]*)', 'g');
 
 		test.lastIndex = startOffset;
 		let searchResult;

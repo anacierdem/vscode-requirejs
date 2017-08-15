@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.3] - 2017-15-08
+### Changed
+
+- Improved constructor search. It was previously matching partial words and was not case sensitive resulting in inifinite loops.
+
 ## [0.1.2] - 2017-14-08
 ### Changed
 
