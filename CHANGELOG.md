@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.6] - 2017-29-08
+### Changed
+
+- Added patreon URL
+
 ## [0.1.4] - 2017-15-08
 ### Changed
 

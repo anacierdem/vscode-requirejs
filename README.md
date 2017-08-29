@@ -63,3 +63,4 @@ When set to true, it will prevent the final search in the landing module and ins
 ## Support
 
 The project is maintained at: [gitHub](https://github.com/anacierdem/vscode-requirejs)
+Support me at http://patreon.com/anacierdem
