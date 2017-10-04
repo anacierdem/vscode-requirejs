@@ -1,0 +1,8 @@
+{
+  "name": "garden",
+  "description": "Advanced shared component extending the base one.",
+  "private": true,
+  "scripts": {
+    "build": "cd build && node ../../libraries/r.js -o build.js"
+  }
+}

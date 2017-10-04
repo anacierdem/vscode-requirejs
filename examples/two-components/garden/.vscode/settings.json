@@ -1,0 +1,7 @@
+{
+	"files.exclude": {
+		"build/out": true
+	},
+	"requireModuleSupport.modulePath": ".",
+	"requireModuleSupport.configFile": "config.js"
+}

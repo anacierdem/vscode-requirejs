@@ -1,0 +1,7 @@
+{
+	"files.exclude": {
+		"libraries": true,
+		"build/out": true
+	},
+	"requireModuleSupport.modulePath": "."
+}

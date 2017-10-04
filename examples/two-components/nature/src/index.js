@@ -1,0 +1,1 @@
+define(['nature/models/fox'], {});

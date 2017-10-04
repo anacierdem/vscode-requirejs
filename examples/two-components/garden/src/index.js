@@ -1,0 +1,1 @@
+define(['garden/models/rabbit'], {});

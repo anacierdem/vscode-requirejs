@@ -1,0 +1,8 @@
+{
+  "name": "two-components",
+  "description": "Application using two components, which extend each other.",
+  "private": true,
+  "scripts": {
+    "build": "cd nature && npm run build && cd ../garden && npm run build"
+  }
+}
