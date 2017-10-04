@@ -42,6 +42,9 @@
 		"test": "node ./node_modules/vscode/bin/test",
 		"lint": "node ./node_modules/eslint/bin/eslint extension.js test"
 	},
+	"dependencies": {
+		"requirejs": "^2.3.5"
+	},
 	"devDependencies": {
 		"goodparts": "^1.2.1",
 		"decache": "^4.1.0",
