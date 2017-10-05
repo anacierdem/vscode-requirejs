@@ -41,14 +41,17 @@ class ReferenceProvider {
 		let list, result;
 		const array = /\[[^\]]*\]/gi;
 		const params = /function\s*\([^)]*/gi;
+		// Remove comments, which would make JSON.parse fail. Not the optimal solution;
+		// see https://stackoverflow.com/a/15123777/623816 for more information.
+		const cleanedStr = str.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '');
 
-		let m = array.exec(str);
+		let m = array.exec(cleanedStr);
 
 		if (m) {
 			list = JSON.parse(m[0].split('\'').join('"'));
 		}
 
-		m = params.exec(str);
+		m = params.exec(cleanedStr);
 
 		if (m) {
 			const test = /([^\s,]+)/g;
