@@ -3,6 +3,7 @@ const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 const requirejs = require('requirejs');
+const amodroConfig = require('amodro-trace/config');
 
 // Initialize or re-initialize requirejs for the activated context.
 function initializeRequireJs () {
@@ -24,9 +25,11 @@ function initializeRequireJs () {
 
 	if (configFile) {
 		const configContent = fs.readFileSync(path.join(rootPath, configFile), 'utf-8');
-		const require = requirejs; // eslint-disable-line no-unused-vars
+		const config = amodroConfig.find(configContent);
 
-		eval(configContent); // eslint-disable-line no-eval
+		if (config) {
+			requirejs.config(config);
+		}
 	}
 }
 
@@ -507,6 +510,8 @@ Object.assign(exports, {
 	ReferenceProvider,
 	activate (context) {
 		initializeRequireJs();
+		context.subscriptions.push(
+			vscode.workspace.onDidChangeConfiguration(initializeRequireJs));
 		context.subscriptions.push(
 			vscode.languages.registerDefinitionProvider(
 				'javascript',
