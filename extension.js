@@ -511,6 +511,8 @@ Object.assign(exports, {
 	activate (context) {
 		initializeRequireJs();
 		context.subscriptions.push(
+			vscode.workspace.onDidChangeConfiguration(initializeRequireJs));
+		context.subscriptions.push(
 			vscode.languages.registerDefinitionProvider(
 				'javascript',
 				new ReferenceProvider()
