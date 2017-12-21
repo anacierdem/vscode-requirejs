@@ -49,7 +49,7 @@
 	},
 	"scripts": {
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"test": "node ./node_modules/vscode/bin/test",
+		"test": "export CODE_TESTS_WORKSPACE=CODE_TESTS_PATH/../testFiles && node ./node_modules/vscode/bin/test",
 		"lint": "node ./node_modules/eslint/bin/eslint extension.js test"
 	},
 	"dependencies": {

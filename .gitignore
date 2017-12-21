@@ -1,3 +1,4 @@
 examples/**/build/out
 node_modules
 coverage
+.vscode-test
