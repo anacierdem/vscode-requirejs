@@ -1,0 +1,11 @@
+{
+	"files.exclude": {
+		"libraries": true,
+		"node_modules": true,
+		"build/out": true
+	},
+	"requireModuleSupport.modulePath": ".",
+	"requireModuleSupport.pluginExtensions": {
+		"css": ".css"
+	}
+}

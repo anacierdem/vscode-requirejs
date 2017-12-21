@@ -1,0 +1,9 @@
+{
+	"files.exclude": {
+		"libraries": true,
+		"garden/build/out": true,
+		"nature/build/out": true
+	},
+	"requireModuleSupport.modulePath": ".",
+	"requireModuleSupport.configFile": "config.js"
+}

@@ -39,7 +39,7 @@ function run(testsRoot, clb) {
         "enabled": true,
         "relativeSourcePath": "../",
         "relativeCoverageDir": "../coverage",
-        "ignorePatterns": ["**/node_modules/**", "**/test/**", "**/coverage/**", "**/testFiles/**"],
+        "ignorePatterns": ["**/node_modules/**", "**/test/**", "**/coverage/**", "**/testFiles/**", "**/examples/**"],
     };
     if (coverOptions && coverOptions.enabled) {
         // Setup coverage pre-test, including post-test hook to report

@@ -1,0 +1,8 @@
+{
+  "name": "nature",
+  "description": "Base shared component.",
+  "private": true,
+  "scripts": {
+    "build": "cd build && node ../../libraries/r.js -o build.js"
+  }
+}

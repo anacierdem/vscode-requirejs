@@ -1,0 +1,11 @@
+{
+  "name": "css-plugin",
+  "description": "Application using a RequireJS plugin lo load stylesheets.",
+  "private": true,
+  "scripts": {
+    "build": "cd build && node ../libraries/r.js -o build.js"
+  },
+  "devDependencies": {
+    "csso": "~3.2.0"
+  }
+}
