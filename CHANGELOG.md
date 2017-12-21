@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.7] - 2017-21-12
+### Added
+
+- Added RequireJS config file support. Special thanks to [prantlf](https://github.com/prantlf)
+
 ## [0.1.6] - 2017-29-08
 ### Changed
 
