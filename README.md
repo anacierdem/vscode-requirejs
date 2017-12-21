@@ -60,6 +60,63 @@ Another option is;
 
 When set to true, it will prevent the final search in the landing module and instead just reference the file. When this feature is left as false, the constructor or property that the goto definition operation has started with will be searched in the module file.
 
+If you use a dedicated RequireJS configuration file, which specified paths to sub-components or plugins, you can load it to help the module path resolution:
+
+    "requireModuleSupport.configFile"
+
+The value of `requireModuleSupport.modulePath` will be used as `baseUrl` then.
+
+Example:
+
+    "requireModuleSupport.configFile": "config.js"
+
+This will evaluate the file `[WORKSPACE_ROOT]\config.js` with `require = requirejs`.
+
+If you use RequireJS plugins in your projects, which do not require appending file extensions to their target modules, you will need to supply these extensions too:
+
+    "requireModuleSupport.pluginExtensions"
+
+Example:
+
+    "requireModuleSupport.pluginExtensions": {
+        "css": ".css"
+    }
+
+This will ensure, that a module reference like "css!views/panel" will be handled as "css!views/panel.css" before resolving the actual module path.
+
+### RequireJS Config Files
+
+RequireJS configuration properties like `paths`, `bundles` and `config` are usually maintained in a separate file in a single `require.config()` statement. This file can be evaluated, when the project is loaded on debug pages, when the project is built (for root components) and in other situations - like this editor plugin.
+
+Example:
+
+    // config.js
+    require.config({
+        paths: {
+            ui: 'ui/src', // The "ui" component is located elsewere.
+            css: 'libraries/css' // A shortcut for the full module path.
+        }
+    });
+
+    // main.js
+    require(['ui/views/panel'], function (Panel) {
+        const panel = new Panel();
+        document.body.appendChild(panel.el);
+    });
+
+    // ui/src/views/panel.js
+    define(['css!./panel'], function () {
+        function Panel () {
+            this.el = ...;
+        }
+        return Panel;
+    });
+
+    // ui/src/views/panel.css
+    .panel {
+        ...
+    }
+
 ## Support
 
 The project is maintained at: [gitHub](https://github.com/anacierdem/vscode-requirejs)
