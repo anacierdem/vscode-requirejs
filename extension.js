@@ -83,6 +83,10 @@ class ReferenceProvider {
 			list = JSON.parse(m[0].split('\'').join('"'));
 		}
 
+		if (!list || list.length === 0) {
+			return {};
+		}
+
 		m = params.exec(cleanedStr);
 
 		if (m) {
