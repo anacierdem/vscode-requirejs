@@ -40,7 +40,10 @@ class ReferenceProvider {
 	 * @returns {Array} containing objects
 	 */
 	getRequireOrDefineStatements (str) {
-		let match = /^[ \t]*(define|require)\s*\(([^)]*)/mgi;
+		let requireModuleSupport = vscode.workspace.getConfiguration('requireModuleSupport');
+		let requireName = requireModuleSupport.get('requireName') || 'require';
+		let defineName = requireModuleSupport.get('defineName') || 'define';
+		let match = new RegExp(`^[ \t]*(${defineName}|${requireName})\s*\(([^)]*)`, 'mgi');
 
 		let list = [];
 		let searchResult;
