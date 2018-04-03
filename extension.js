@@ -43,7 +43,7 @@ class ReferenceProvider {
 		let requireModuleSupport = vscode.workspace.getConfiguration('requireModuleSupport');
 		let requireName = requireModuleSupport.get('requireName') || 'require';
 		let defineName = requireModuleSupport.get('defineName') || 'define';
-		let match = new RegExp(`^[ \t]*(${defineName}|${requireName})\s*\(([^)]*)`, 'mgi');
+		let match = new RegExp('^[ \t]*(' + defineName + '|' + requireName + ')s*\\(([^)]*)', 'mgi');
 
 		let list = [];
 		let searchResult;
@@ -419,6 +419,9 @@ class ReferenceProvider {
 				// TODO: also consider window. defined globals
 				// Dont have a parent and have a constructor, follow the constructor
 
+				let requireModuleSupport = vscode.workspace.getConfiguration('requireModuleSupport');
+				let requireName = requireModuleSupport.get('requireName') || 'require';
+
 				if (constructors.length && !haveParent) {
 					let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
 					// Break search in case the instance and the constructor have the same name
@@ -428,8 +431,8 @@ class ReferenceProvider {
 						resolve(undefined);
 
 						return;
-					} else if (constructorName === 'require') { // Module is used commonJS style - instead of complicating module list extraction, directly navigate
-						let re = /(require)\s*\(\s*(['"]*)/gi;
+					} else if (constructorName === requireName) { // Module is used commonJS style - instead of complicating module list extraction, directly navigate
+						let re = new RegExp(`(${requireName})s*\\(s*(['"]*)`, 'gi');
 
 						re.lastIndex = document.offsetAt(constructors[0].range._start);
 						let stringOffset = re.exec(fullText)[0].length;
