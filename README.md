@@ -84,6 +84,13 @@ Example:
 
 This will ensure, that a module reference like "css!views/panel" will be handled as "css!views/panel.css" before resolving the actual module path.
 
+If you for some reason are using custom `define` and `require` names, those can be configured with
+
+    "requireModuleSupport.requireName": "requireCustomName",
+    "requireModuleSupport.defineName": "defineCustomName"
+
+And this will resolve correctly.
+
 ### RequireJS Config Files
 
 RequireJS configuration properties like `paths`, `bundles` and `config` are usually maintained in a separate file in a single `require.config()` statement. This file can be evaluated, when the project is loaded on debug pages, when the project is built (for root components) and in other situations - like this editor plugin.
