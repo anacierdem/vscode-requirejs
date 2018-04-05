@@ -33,8 +33,8 @@ function initializeRequireJs () {
 	}
 }
 
-class Base {
-/**
+class ReferenceProvider {
+	/**
 	 * Return array containing object with start index of require/define and result
 	 * @param {String} str String to process
 	 * @returns {Array} containing objects
@@ -354,9 +354,7 @@ class Base {
 
 		return false;
 	}
-}
 
-class ReferenceProvider extends Base {
 	provideDefinition (document, position) {
 		const fullText = document.getText();
 		const currentFilePath = document.fileName;
@@ -521,172 +519,8 @@ class ReferenceProvider extends Base {
 
 ReferenceProvider.childWord = '';
 
-class CompletionItemProvider extends Base {
-	providerCompletionItems (document, position, token, context) {
-		const fullText = document.getText();
-		const currentFilePath = document.fileName;
-		const range = document.getWordRangeAtPosition(position);
-
-		let moduleList, requireOrDefineStatements;
-		let foundSection = null;
-
-		if (range) {
-			const textAtCaret = document.getText(range);
-			const caretPosition = document.offsetAt(range._start);
-			const commentRanges = this.findComments(fullText);
-
-			requireOrDefineStatements = this.getRequireOrDefineStatements(fullText);
-
-			if (requireOrDefineStatements.length) {
-				foundSection = this.findCurrentDefineRange(requireOrDefineStatements, caretPosition);
-				if (foundSection && !this.checkIfCommentedOut(commentRanges, foundSection.start)) {
-					moduleList = this.getModulesWithPathFromRequireOrDefine(foundSection.contents);
-				}
-			}
-
-			let modulePath;
-
-			modulePath = moduleList ? moduleList[textAtCaret] : null;
-
-			// We matched a module (textAtCaret is a module)
-			if (modulePath) {
-				let searchFor = '';
-				let stopSearchingFurther;
-
-				if (ReferenceProvider.childWord === '') { // Not a parent - search for the module name (word)
-					searchFor = textAtCaret;
-					stopSearchingFurther = true;
-				} else { // It is a parent, search for the child which is a property of the module
-					searchFor = ReferenceProvider.childWord;
-					stopSearchingFurther = false;
-				}
-				ReferenceProvider.childWord = '';
-
-				return this.searchModule(currentFilePath, modulePath, searchFor, stopSearchingFurther);
-			}	// word is not a module
-
-			return new Promise(resolve => {
-				let continueFrom, tmpModuleName;
-
-				let dotPosition = range._start._character >= 1
-					? document.offsetAt(new vscode.Position(range._start._line, range._start._character - 1))
-					: 0;
-
-				// Do backwards search for a dot
-				dotPosition = this.doBackwardsSearch(fullText, dotPosition, '.');
-				const haveParent = dotPosition !== false;
-
-				if (!haveParent) {
-					tmpModuleName = this.extractString(document, range);
-				}
-
-				let offsetStart = foundSection ? foundSection.start : 0;
-				let offsetEnd = foundSection ? foundSection.end : Infinity;
-				const constructors = this.findConstructor(document, textAtCaret, fullText, offsetStart, offsetEnd);
-				// TODO: also consider window. defined globals
-				// Dont have a parent and have a constructor, follow the constructor
-
-				let requireModuleSupport = vscode.workspace.getConfiguration('requireModuleSupport');
-				let requireName = requireModuleSupport.get('requireName') || 'require';
-
-				if (constructors.length && !haveParent) {
-					let constructorName = document.getText(document.getWordRangeAtPosition(constructors[0].range._start));
-					// Break search in case the instance and the constructor have the same name
-
-					if (constructorName === textAtCaret
-						|| constructorName === ReferenceProvider.childWord) {
-						resolve(undefined);
-
-						return;
-					} else if (constructorName === requireName) { // Module is used commonJS style - instead of complicating module list extraction, directly navigate
-						let re = new RegExp(`(${requireName})s*\\(s*(['"]*)`, 'gi');
-
-						re.lastIndex = document.offsetAt(constructors[0].range._start);
-						let stringOffset = re.exec(fullText)[0].length;
-						const lineStart = constructors[0].range._start._line;
-						const startCharacter = constructors[0].range._start._character;
-
-						const string = this.extractString(document, new vscode.Range(
-							new vscode.Position(lineStart, startCharacter + stringOffset),
-							new vscode.Position(lineStart, startCharacter + stringOffset)
-						));
-
-						this.searchModule(currentFilePath, string, ReferenceProvider.childWord, true).then(refs => {
-							resolve([refs]);
-						});
-					} else {
-						continueFrom = constructors[0].range._start;
-					}
-				} else if (haveParent) { // Have a parent - follow it
-					const propertyParentPosition = document.positionAt(dotPosition);
-					let bracketPosition = document.offsetAt(propertyParentPosition);
-
-					// Do backwards search for a ")"
-					bracketPosition = this.doBackwardsSearch(fullText, bracketPosition, ')');
-
-					// Immediately invoked define/require
-					if (bracketPosition !== false) {
-						const line = document.lineAt(propertyParentPosition._line).text;
-						const modulePathFromLine = /['"]([^'"]*)/gi.exec(line);
-
-						if (modulePathFromLine.length === 0) {
-							resolve(undefined);
-
-							return;
-						}
-
-						this.searchModule(currentFilePath, modulePathFromLine[1], textAtCaret, true).then(refs => {
-							resolve([refs]);
-						});
-					} else {
-						continueFrom = propertyParentPosition;
-						ReferenceProvider.childWord = textAtCaret;
-					}
-				} else { // Neither have a parent nor a constructor, maybe its a module itself? navigate to module
-					let isModule = false;
-
-					for (let key in moduleList) {
-						if (moduleList[key] === tmpModuleName) {
-							isModule = true;
-							break;
-						}
-					}
-
-					if (isModule) {
-						this.searchModule(currentFilePath, tmpModuleName, '', true).then(refs => {
-							resolve([refs]);
-						});
-					} else {
-						// No match;
-						resolve(undefined);
-
-						return;
-					}
-				}
-
-				// Should we continue searching? If so re-invoke a definition provider
-				if (continueFrom) {
-					vscode.commands.executeCommand('vscode.executeCompletionItemProvider', document.uri, continueFrom).then(refs => {
-						for (let i = refs.length - 1; i >= 0; i--) {
-							// Discard if same file
-							if (refs[i].uri.fsPath === document.uri.fsPath) {
-								refs.splice(i, 1);
-							}
-						}
-						resolve(refs);
-					});
-				}
-			});
-		}
-		// No range;
-
-		return resolve(undefined);
-	}
-}
-
 Object.assign(exports, {
 	ReferenceProvider,
-	CompletionItemProvider,
 	activate (context) {
 		initializeRequireJs();
 		context.subscriptions.push(
@@ -695,12 +529,6 @@ Object.assign(exports, {
 			vscode.languages.registerDefinitionProvider(
 				'javascript',
 				new ReferenceProvider()
-			)
-		);
-		context.subscriptions.push(
-			vscode.languages.registerCompletionItemProvider(
-				'javascript',
-				new CompletionItemProvider()
 			)
 		);
 	}
