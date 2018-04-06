@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.10] - 2018-29-03
+
+### Changed
+
+- Updated dependencies.
+
+
 ## [0.1.9] - 2017-22-12
 ### Added
 
