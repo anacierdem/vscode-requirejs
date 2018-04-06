@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.11] - 2018-06-04
+### Added
+
+- Added support for customizing require/define function names. Special thanks to [DaBs](https://github.com/DaBs)
+
 ## [0.1.10] - 2018-29-03
 
 ### Changed
