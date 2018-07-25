@@ -274,17 +274,16 @@ class ReferenceProvider {
 		 * @returns {String} extracted string
 		 */
 	extractString (document, range) {
-		let char;
-
 		if (range._end._line !== range._start._line) {
 			return false;
 		}
 
 		const line = document.lineAt(range._start._line).text;
 
-		const matchString = new RegExp(/([\"\'\`]).*?\1/g);
+		const matchString = new RegExp(/(["'`]).*?\1/g);
 
 		let result;
+
 		while ((result = matchString.exec(line)) !== null) {
 			const start = result.index + 1;
 			const end = result.index + result[0].length - 1;
@@ -301,6 +300,7 @@ class ReferenceProvider {
 				));
 			}
 		}
+
 		return false;
 	}
 	/**
