@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.1.12] - 2018-25-07
+## [0.1.13] - 2018-25-07
 ### Added
 
 - Added support for require/define arrow function callbacks.

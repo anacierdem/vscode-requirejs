@@ -43,7 +43,7 @@ class ReferenceProvider {
 		let requireModuleSupport = vscode.workspace.getConfiguration('requireModuleSupport');
 		let requireName = requireModuleSupport.get('requireName') || 'require';
 		let defineName = requireModuleSupport.get('defineName') || 'define';
-		let match = new RegExp('^[ \t]*(' + defineName + '|' + requireName + ')s*\\(([^)]*)', 'mgi');
+		let match = new RegExp('^[\\s]*(' + defineName + '|' + requireName + ')\\s*\\([^]*?([{>])', 'mgi');
 
 		let list = [];
 		let searchResult;
@@ -75,7 +75,7 @@ class ReferenceProvider {
 	getModulesWithPathFromRequireOrDefine (str) {
 		let list, result;
 		const array = /\[[^\]]*\]/gi;
-		const params = /(?:function\s*\(([^)]*))|(?:(?:(?:\(([a-zA-Z,\s\t]*)\))|([a-zA-Z0-9]+))(?=[\s\t]*=>))/gi;
+		const params = /(?:function\s*\(([^)]*))|(?:(?:(?:\(([a-zA-Z,\s\t]*)\))|([a-zA-Z0-9]+))(?=[\s\t]*=>))/i;
 
 		// Remove comments, which would make JSON.parse fail. Not the optimal solution;
 		// see https://stackoverflow.com/a/15123777/623816 for more information.

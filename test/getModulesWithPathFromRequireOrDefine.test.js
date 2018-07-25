@@ -1,5 +1,4 @@
 const assert = require('assert');
-const { workspace } = require('vscode');
 const { ReferenceProvider } = require('../extension');
 const referenceProvider = new ReferenceProvider();
 
@@ -50,30 +49,54 @@ suite('getModulesWithPathFromRequireOrDefine', () => {
 		assert.deepEqual(referenceProvider.getModulesWithPathFromRequireOrDefine(input), expected);
 	});
 
-	test('should handle basic arrow function', () =>
-		workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/basicArrow.js')
-			.then(document => {
-				const expected = { a: 'moduleA' };
+	test('should handle basic arrow function', () => {
+		const input = `require(['moduleA'], a => {
+			var foo = a;
+			foo.baz();
+			bar.prop;
+			(c) => c;
+			c => c;
+			c => {};
+		});`;
+		const expected = { a: 'moduleA' };
 
-				assert.deepEqual(
-					referenceProvider.getModulesWithPathFromRequireOrDefine(document.getText()),
-					expected
-				);
-			})
-	);
+		assert.deepEqual(
+			referenceProvider.getModulesWithPathFromRequireOrDefine(input),
+			expected
+		);
+	});
 
-	test('should handle multiline arrow function', () =>
-		workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/arrowMultilineWithComment.js')
-			.then(document => {
-				const expected = {
-					a: 'moduleA',
-					b: 'moduleB'
-				};
+	test('should handle basic arrow function with parens', () => {
+		const input = `require(['moduleA'], (a) => {
+			var foo = a;
+			foo.baz();
+			bar.prop;
+			(c) => c;
+			c => c;
+			c => {}
+		});`;
+		const expected = { a: 'moduleA' };
 
-				assert.deepEqual(
-					referenceProvider.getModulesWithPathFromRequireOrDefine(document.getText()),
-					expected
-				);
-			})
-	);
+		assert.deepEqual(
+			referenceProvider.getModulesWithPathFromRequireOrDefine(input),
+			expected
+		);
+	});
+
+	test('should handle multiline arrow function', () => {
+		const input = `require(['moduleA', 'moduleB'], (a, b) => {
+			var foo = a;
+			foo.baz();
+			bar.prop;
+		});`;
+		const expected = {
+			a: 'moduleA',
+			b: 'moduleB'
+		};
+
+		assert.deepEqual(
+			referenceProvider.getModulesWithPathFromRequireOrDefine(input),
+			expected
+		);
+	});
 });
