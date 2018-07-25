@@ -75,7 +75,8 @@ class ReferenceProvider {
 	getModulesWithPathFromRequireOrDefine (str) {
 		let list, result;
 		const array = /\[[^\]]*\]/gi;
-		const params = /function\s*\([^)]*/gi;
+		const params = /(?:function\s*\(([^)]*))|(?:(?:(?:\(([a-zA-Z,\s\t]*)\))|([a-zA-Z0-9]+))(?=[\s\t]*=>))/gi;
+
 		// Remove comments, which would make JSON.parse fail. Not the optimal solution;
 		// see https://stackoverflow.com/a/15123777/623816 for more information.
 		const cleanedStr = str.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, '');
@@ -92,10 +93,10 @@ class ReferenceProvider {
 
 		m = params.exec(cleanedStr);
 
-		if (m) {
+		if (m && (m[1] || m[2] || m[3])) {
 			const test = /([^\s,]+)/g;
 
-			result = m[0].slice(m[0].indexOf('(') + 1).match(test);
+			result = (m[1] || m[2] || m[3]).match(test);
 		}
 
 		const moduleList = {};
@@ -275,28 +276,32 @@ class ReferenceProvider {
 	extractString (document, range) {
 		let char;
 
+		if (range._end._line !== range._start._line) {
+			return false;
+		}
+
 		const line = document.lineAt(range._start._line).text;
 
-		let startOffset = 0;
+		const matchString = new RegExp(/([\"\'\`]).*?\1/g);
 
-		char = line[range._start._character - startOffset];
-		while (char !== '\'' && char !== '"' && range._start._character - startOffset >= 0) {
-			startOffset++;
-			char = line[range._start._character - startOffset];
+		let result;
+		while ((result = matchString.exec(line)) !== null) {
+			const start = result.index + 1;
+			const end = result.index + result[0].length - 1;
+
+			// Early out if selection covers the found string
+			if (range._start._character < start && range._end._character > end) {
+				return false;
+			}
+
+			if (range._start._character <= end && range._start._character >= start) {
+				return document.getText(new vscode.Range(
+					new vscode.Position(range._start._line, start),
+					new vscode.Position(range._start._line, end)
+				));
+			}
 		}
-
-		let endOffset = 0;
-
-		char = line[range._start._character + endOffset];
-		while (char !== '\'' && char !== '"' && range._start._character + endOffset < line.length) {
-			endOffset++;
-			char = line[range._start._character + endOffset];
-		}
-
-		return document.getText(new vscode.Range(
-			new vscode.Position(range._start._line, range._start._character - startOffset + 1),
-			new vscode.Position(range._start._line, range._start._character + endOffset)
-		));
+		return false;
 	}
 	/**
 		 * Searches for a character backwards inside fullText discarding spaces, tabs and newlines

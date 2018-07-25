@@ -1,4 +1,5 @@
 const assert = require('assert');
+const { workspace, Range } = require('vscode');
 const { ReferenceProvider } = require('../extension');
 const referenceProvider = new ReferenceProvider();
 
@@ -48,4 +49,33 @@ suite('getModulesWithPathFromRequireOrDefine', () => {
 
 		assert.deepEqual(referenceProvider.getModulesWithPathFromRequireOrDefine(input), expected);
 	});
+
+	test('should handle basic arrow function', () =>
+		workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/basicArrow.js')
+			.then(document => {
+				const expected = {
+					a: 'moduleA'
+				};
+
+				assert.deepEqual(
+					referenceProvider.getModulesWithPathFromRequireOrDefine(document.getText()),
+					expected
+				);
+			})
+		);
+
+	test('should handle multiline arrow function', () =>
+		workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/arrowMultilineWithComment.js')
+			.then(document => {
+				const expected = {
+					a: 'moduleA',
+					b: 'moduleB'
+				};
+
+				assert.deepEqual(
+					referenceProvider.getModulesWithPathFromRequireOrDefine(document.getText()),
+					expected
+				);
+			})
+		);
 });

@@ -4,12 +4,12 @@ const { ReferenceProvider } = require('../extension');
 const referenceProvider = new ReferenceProvider();
 
 suite('extractString', () => {
-	test('should return line when no quotes are detected', () =>
+	test('should return false when no quotes are detected', () =>
 		workspace.openTextDocument(__dirname.replace('test', '') + 'testFiles/basic.js')
 			.then(document => {
 				assert.equal(
-					referenceProvider.extractString(document, new Range(1, 4, 1, 15)),
-					'    var foo = a;'
+					referenceProvider.extractString(document, new Range(1, 8, 1, 8)),
+					false
 				);
 			})
 	);
