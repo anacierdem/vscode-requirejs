@@ -8,7 +8,7 @@ suite('searchModule', () => {
 	test('should resolve with path for moduleA.js', () => {
 		return referenceProvider.searchModule('./test1.js', 'moduleA', '', true)
 			.then(result => {
-				assert.equal(normalize(result.uri._fsPath), normalize(`/${rootPath}testFiles/moduleA.js`));
+				assert.equal(normalize(result.uri.path), normalize(`/${rootPath}testFiles/moduleA.js`));
 			});
 	});
 
