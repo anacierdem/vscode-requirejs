@@ -24,3 +24,9 @@ script:
 
 after_script:
   - bash <(curl -s https://codecov.io/bash)
+
+deploy:
+  - provider: script
+    script: bash npm i -g vsce && npm run vsce -p ${VSCODE_KEY}
+    on:
+      branch: master
