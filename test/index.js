@@ -21,7 +21,8 @@ if (!tty.getWindowSize) {
 
 let mocha = new Mocha({
     ui: 'tdd',
-    useColors: true 
+    useColors: true,
+    timeout: '3000'
 });
 
 function _mkDirIfExists(dir) {
