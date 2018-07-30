@@ -15,8 +15,12 @@ suite('referenceProvider basic.js', () => {
 		immediatelyInvoked: __dirname.replace('test', '') + 'testFiles/immediatelyInvoked.js',
 		confusingComments: __dirname.replace('test', '') + 'testFiles/confusingComments.js',
 		inlineRequire: __dirname.replace('test', '') + 'testFiles/inlineRequire.js',
+		inlineRequireProperty: __dirname.replace('test', '') + 'testFiles/inlineRequireProperty.js',
+		multipleModules: __dirname.replace('test', '') + 'testFiles/multipleModules.js',
 		moduleA: __dirname.replace('test', '') + 'testFiles/moduleA.js',
-		moduleB: __dirname.replace('test', '') + 'testFiles/moduleB.js'
+		moduleB: __dirname.replace('test', '') + 'testFiles/moduleB.js',
+		moduleC: __dirname.replace('test', '') + 'testFiles/moduleC.js',
+		moduleD: __dirname.replace('test', '') + 'testFiles/moduleD.js'
 	};
 
 	const startOfDocument = {
@@ -41,6 +45,17 @@ suite('referenceProvider basic.js', () => {
 		}
 	};
 
+	const propRangeSingle = {
+		_end: {
+			_character: 8,
+			_line: 2
+		},
+		_start: {
+			_character: 8,
+			_line: 2
+		}
+	};
+
 	const bazRange = {
 		_end: {
 			_character: 11,
@@ -53,6 +68,17 @@ suite('referenceProvider basic.js', () => {
 	};
 
 	const fooRange = {
+		_end: {
+			_character: 11,
+			_line: 2
+		},
+		_start: {
+			_character: 8,
+			_line: 2
+		}
+	};
+
+	const fooRangeSingle = {
 		_end: {
 			_character: 8,
 			_line: 2
@@ -72,106 +98,101 @@ suite('referenceProvider basic.js', () => {
 			expectedTarget: files.moduleB,
 			expectedRange: startOfDocument
 		},
-		bazToA: {
+		moduleC: {
+			expectedTarget: files.moduleC,
+			expectedRange: startOfDocument
+		},
+		moduleD: {
+			expectedTarget: files.moduleD,
+			expectedRange: startOfDocument
+		},
+		bazInA: {
 			expectedTarget: files.moduleA,
 			expectedRange: bazRange
 		},
-		fooToA: {
+		// TODO: this should be a range
+		fooInA: {
 			expectedTarget: files.moduleA,
-			expectedRange: startOfDocument
+			expectedRange: fooRangeSingle
 		},
-		fooToB: {
-			expectedTarget: files.moduleB,
-			expectedRange: startOfDocument
-		},
-		fooToARange: {
-			expectedTarget: files.moduleA,
+		fooInD: {
+			expectedTarget: files.moduleD,
 			expectedRange: fooRange
 		},
-		barToB: {
-			expectedTarget: files.moduleB,
-			expectedRange: startOfDocument
-		},
-		propToA: {
+		noResult: {
 			expectedTarget: null,
-			expectedRange: startOfDocument
+			expectedRange: null
 		},
-		propToB: {
+		propInB: {
 			expectedTarget: files.moduleB,
 			expectedRange: propRange
 		},
-		a: {
-			expectedTarget: files.moduleA,
-			expectedRange: startOfDocument
-		},
-		b: {
+		// TODO: this should be a range
+		propInBSingle: {
 			expectedTarget: files.moduleB,
-			expectedRange: startOfDocument
+			expectedRange: propRangeSingle
 		}
 	};
 
 	const tests = {
 		basic: {
-			moduleA: [new Position(0, 14), new Position(3, 11), new Position(1, 15), new Position(3, 6)],
+			moduleA: [new Position(0, 14), new Position(1, 15), new Position(3, 6)],
 			moduleB: [new Position(0, 24), new Position(2, 15), new Position(4, 6)],
-			propToB: new Position(4, 11)
+			propInB: [new Position(4, 11)],
+			bazInA: [new Position(3, 11)]
 		},
-		// basicArrow: {
-		// 	moduleA: new Position(0, 14),
-		// 	bazToA: new Position(2, 9),
-		// 	propToA: new Position(3, 11),
-		// 	a: new Position(1, 15),
-		// 	fooToA: new Position(2, 5)
-		// },
-		// basicMultiline: {
-		// 	moduleA: new Position(0, 15),
-		// 	moduleB: new Position(1, 15),
-		// 	fooToA: new Position(4, 5),
-		// 	bazToA: new Position(4, 10),
-		// 	barToB: new Position(5, 5),
-		// 	propToB: new Position(5, 10)
-		// },
-		// basicMultilineWithComment: {
-		// 	moduleA: new Position(0, 15),
-		// 	moduleB: new Position(1, 15),
-		// 	fooToA: new Position(4, 5),
-		// 	bazToA: new Position(4, 10),
-		// 	barToB: new Position(5, 5),
-		// 	propToB: new Position(5, 10)
-		// },
-		// confusingComments: {
-		// 	moduleB: new Position(5, 9),
-		// 	fooToB: new Position(9, 5),
-		// 	propToB: new Position(9, 10)
-		// },
-		// ifStatement: {
-		// 	moduleA: new Position(0, 14),
-		// 	moduleB: new Position(0, 24),
-		// 	bazToA: new Position(3, 11),
-		// 	propToB: new Position(4, 11),
-		// 	a: new Position(1, 15),
-		// 	b: new Position(2, 15),
-		// 	barToB: new Position(4, 6),
-		// 	fooToA: new Position(3, 6)
-		// },
-		// ifStatementWithProperty: {
-		// 	moduleA: new Position(0, 14),
-		// 	moduleB: new Position(0, 24),
-		// 	bazToA: new Position(3, 11),
-		// 	propToB: new Position(4, 11),
-		// 	a: new Position(1, 15),
-		// 	b: new Position(2, 15),
-		// 	barToB: new Position(4, 6),
-		// 	fooToA: new Position(3, 6)
-		// },
-		// immediatelyInvoked: {
-		// 	// moduleA: new Position(0, 12), // TODO: should fix this case
-		// 	fooToARange: new Position(0, 21)
-		// },
-		// inlineRequire: {
-		// 	moduleA: new Position(1, 12),
-		// 	moduleA: new Position(1, 30),
-		// },
+		basicArrow: {
+			moduleA: [new Position(0, 14), new Position(1, 15), new Position(2, 5)],
+			bazInA: [new Position(2, 9)],
+			noResult: [new Position(3, 11)]
+		},
+		basicMultiline: {
+			moduleA: [new Position(0, 15), new Position(4, 5)],
+			moduleB: [new Position(1, 15), new Position(5, 5)],
+			bazInA: [new Position(4, 10)],
+			propInB: [new Position(5, 10)]
+		},
+		basicMultilineWithComment: {
+			moduleA: [new Position(0, 15), new Position(4, 5)],
+			moduleB: [new Position(1, 15), new Position(5, 5)],
+			bazInA: [new Position(4, 10)],
+			propInB: [new Position(5, 10)]
+		},
+		confusingComments: {
+			moduleB: [new Position(9, 5), new Position(5, 9)],
+			propInB: [new Position(9, 10)]
+		},
+		ifStatement: {
+			moduleA: [new Position(0, 14), new Position(1, 15), new Position(3, 6)],
+			moduleB: [new Position(0, 24), new Position(2, 15), new Position(4, 6)],
+			propInB: [new Position(4, 11)],
+			bazInA: [new Position(3, 11)]
+		},
+		ifStatementWithProperty: {
+			moduleA: [new Position(0, 14), new Position(1, 15), new Position(3, 6)],
+			moduleB: [new Position(0, 24), new Position(2, 15), new Position(4, 6)],
+			propInB: [new Position(4, 11)],
+			bazInA: [new Position(3, 11)]
+		},
+		immediatelyInvoked: {
+			// moduleA: [new Position(0, 12)], // TODO: should fix this case
+			fooInA: [new Position(0, 21)]
+		},
+		inlineRequire: { moduleA: [new Position(1, 12), new Position(1, 30)] },
+		inlineRequireProperty: {
+			// TODO changing order of these props, tests fails - must investigate
+			moduleB: [new Position(1, 12), new Position(1, 30), new Position(2, 8)],
+			propInBSingle: [new Position(2, 14)]
+		},
+		multipleModules: {
+			moduleA: [new Position(0, 14), new Position(1, 15), new Position(3, 6)],
+			moduleB: [new Position(0, 24), new Position(2, 15), new Position(4, 6)],
+			moduleC: [new Position(6, 23)],
+			propInB: [new Position(4, 11)],
+			bazInA: [new Position(3, 11)],
+			moduleD: [new Position(6, 34), new Position(8, 5)],
+			fooInD: [new Position(8, 10)]
+		}
 	};
 
 	for (let currentTestName in tests) {
@@ -180,11 +201,12 @@ suite('referenceProvider basic.js', () => {
 		for (let currentPositionName in currentTest) {
 			const currentPositions = currentTest[currentPositionName];
 
-			for (let currentTestPositionIndex in currentTest) {
+			for (let currentTestPositionIndex in currentPositions) {
 				const currentPosition = currentPositions[currentTestPositionIndex];
 				const expectedTarget = targets[currentPositionName].expectedTarget;
 
-				test(`${currentPositionName} in ${currentTestName} should ${expectedTarget ? `resolve with path; ${expectedTarget}` : 'not resolve'}`, () =>
+				// TODO: should confirm all reference provider results including the same file
+				test(`position ${currentPosition.line + 1}, ${currentPosition.character + 1} in ${currentTestName} should ${expectedTarget ? `resolve with path; ${expectedTarget} (${currentPositionName})` : 'not resolve'}`, () =>
 					workspace.openTextDocument(files[currentTestName])
 						.then(document => {
 							return referenceProvider.provideDefinition(document, currentPosition).then((result) => {

@@ -5,8 +5,8 @@ require(['moduleA', 'moduleB'], function(a, b) {
     bar.prop;
 });
 define('myName', ['moduleC', 'moduleD'], function(c, d) {
-    var foo = new c();
-    foo.bar();
+    var foo = new d();
+    foo.foo();
 });
 require('moduleA').foo();
 define(function(require) {
