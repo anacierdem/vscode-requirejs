@@ -21,9 +21,6 @@ install:
 script:
   - npm test --silent
   - npm run lint
-
-after_script:
-  - bash <(curl -s https://codecov.io/bash)
   - npm i -g vsce
 
 deploy:
@@ -32,3 +29,6 @@ deploy:
     script: vsce -p ${VSCODE_KEY}
     on:
       branch: master
+
+after_script:
+  - bash <(curl -s https://codecov.io/bash)
