@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.15] - 2018-06-08
+### Added
+
+- Implemented a crude autocompletion.
+
 ## [0.1.14] - 2018-30-07
 ### Changed
 
