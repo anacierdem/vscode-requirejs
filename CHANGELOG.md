@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.16] - 2018-29-08
+### Changed
+
+- Updated logo.
+
 ## [0.1.15] - 2018-06-08
 ### Added
 

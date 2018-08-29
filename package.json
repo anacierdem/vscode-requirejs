@@ -1,8 +1,8 @@
 {
   "name": "require-js",
-  "displayName": "Require Module Support",
+  "displayName": "Require JS Module Support",
   "description": "Adds require.js AMD module goto definition support.",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "publisher": "lici",
   "icon": "logo.png",
   "engines": {
