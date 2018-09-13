@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.18] - 2018-14-09
+### Added
+
+- Commandline installation instructions.
+
 ## [0.1.15] - 2018-06-08
 ### Added
 

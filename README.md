@@ -124,6 +124,14 @@ Example:
         ...
     }
 
+## Installation
+
+run;
+
+    code --install-extension lici.require-js
+
+in your command line, assuming vscode is installed and registered in your path.
+
 ## Support
 
 The project is maintained at: [gitHub](https://github.com/anacierdem/vscode-requirejs)
