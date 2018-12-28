@@ -24,10 +24,15 @@ suite('extension', () => {
 		// Reinitializing RequireJS on configuration change
 		// and registering the RequireJS definition provider.
 		assert.equal(context.subscriptions.length, 3);
+
+		// This is useless!
 		assert.deepEqual(
 			registerDefinitionProviderStub.getCall(0).args,
 			[
-				{ scheme: 'file', language: 'javascript' },
+				[
+					{ scheme: 'file', language: 'javascript' },
+					{ scheme: 'file', language: 'javascriptreact' }
+				],
 				new extension.ReferenceProvider()
 			]
 		);

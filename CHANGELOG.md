@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.19] - 2018-28-12
+### Added
+
+- jsx file support.
+
 ## [0.1.18] - 2018-14-09
 ### Added
 

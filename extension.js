@@ -35,7 +35,7 @@ function initializeRequireJs () {
 	}
 }
 
-const language = { scheme: 'file', language: 'javascript' };
+const language = [{ scheme: 'file', language: 'javascript' }, { scheme: 'file', language: 'javascriptreact' }];
 
 Object.assign(exports, {
 	ReferenceProvider,
