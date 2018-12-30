@@ -2,6 +2,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const requirejs = require('requirejs');
+const fs = require('fs');
 
 class ReferenceProvider {
 	/**
@@ -172,7 +173,14 @@ class ReferenceProvider {
 			filePath = path.join(path.dirname(currentFilePath), filePath);
 		}
 
-		return path.normalize(requirejs.toUrl(filePath));
+		const normalizedPath = path.normalize(requirejs.toUrl(filePath));
+
+		if (fs.existsSync(normalizedPath)) {
+			return normalizedPath;
+		}
+
+		// Append "x" to "/a/b/c.js" to try looking for a jsx file
+		return normalizedPath + 'x';
 	}
 
 	/**
