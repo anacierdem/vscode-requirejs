@@ -124,6 +124,16 @@ Example:
         ...
     }
 
+### JSX support
+
+You can use the completion system with JSX files as well. You just need to set `pluginExtensions` option properly and import your JSX files like `jsx!/src/moduleA`. Example `requireModuleSupport.pluginExtensions`;
+
+    "requireModuleSupport.pluginExtensions": {
+        jsx: ".jsx"
+    }
+
+You can change object keys as you see fit.
+
 ## Installation
 
 run;

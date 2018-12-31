@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.20] - 2018-31-12
+### Updated
+
+- Updated readme to match JSX functionality.
+
 ## [0.1.19] - 2018-28-12
 ### Added
 
