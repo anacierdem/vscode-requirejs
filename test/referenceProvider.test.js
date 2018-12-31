@@ -1,26 +1,45 @@
+const proxyquire = require('proxyquire');
+
 const assert = require('assert');
 const { workspace, Position } = require('vscode');
-const { ReferenceProvider } = require('../extension');
+
+const vscodeStub = {
+	workspace: {
+		getConfiguration: () => {
+			return {
+				get: () => ({ jsx: '.jsx' })
+			};
+		}
+	}
+};
+const { ReferenceProvider } = proxyquire('../extension', { vscode: vscodeStub });
+
 const referenceProvider = new ReferenceProvider();
+
+// vscode.workspace.getConfiguration('requireModuleSupport').get('onlyNavigateToFile') , pluginExtensions
 
 // Integration tests
 suite('referenceProvider basic.js', () => {
+	const baseDir = __dirname.replace('test', '');
 	const files = {
-		basic: __dirname.replace('test', '') + 'testFiles/basic.js',
-		ifStatement: __dirname.replace('test', '') + 'testFiles/ifStatement.js',
-		ifStatementWithProperty: __dirname.replace('test', '') + 'testFiles/ifStatementWithProperty.js',
-		basicArrow: __dirname.replace('test', '') + 'testFiles/basicArrow.js',
-		basicMultiline: __dirname.replace('test', '') + 'testFiles/basicMultiline.js',
-		basicMultilineWithComment: __dirname.replace('test', '') + 'testFiles/basicMultilineWithComment.js',
-		immediatelyInvoked: __dirname.replace('test', '') + 'testFiles/immediatelyInvoked.js',
-		confusingComments: __dirname.replace('test', '') + 'testFiles/confusingComments.js',
-		inlineRequire: __dirname.replace('test', '') + 'testFiles/inlineRequire.js',
-		inlineRequireProperty: __dirname.replace('test', '') + 'testFiles/inlineRequireProperty.js',
-		multipleModules: __dirname.replace('test', '') + 'testFiles/multipleModules.js',
-		moduleA: __dirname.replace('test', '') + 'testFiles/moduleA.js',
-		moduleB: __dirname.replace('test', '') + 'testFiles/moduleB.js',
-		moduleC: __dirname.replace('test', '') + 'testFiles/moduleC.js',
-		moduleD: __dirname.replace('test', '') + 'testFiles/moduleD.js'
+		basic: baseDir + 'testFiles/basic.js',
+		basicJSX: baseDir + 'testFiles/basic.jsx',
+		ifStatement: baseDir + 'testFiles/ifStatement.js',
+		ifStatementWithProperty: baseDir + 'testFiles/ifStatementWithProperty.js',
+		basicArrow: baseDir + 'testFiles/basicArrow.js',
+		basicMultiline: baseDir + 'testFiles/basicMultiline.js',
+		basicMultilineWithComment: baseDir + 'testFiles/basicMultilineWithComment.js',
+		immediatelyInvoked: baseDir + 'testFiles/immediatelyInvoked.js',
+		confusingComments: baseDir + 'testFiles/confusingComments.js',
+		inlineRequire: baseDir + 'testFiles/inlineRequire.js',
+		inlineRequireProperty: baseDir + 'testFiles/inlineRequireProperty.js',
+		multipleModules: baseDir + 'testFiles/multipleModules.js',
+		moduleA: baseDir + 'testFiles/moduleA.js',
+		moduleB: baseDir + 'testFiles/moduleB.js',
+		moduleAJSX: baseDir + 'testFiles/moduleA.jsx',
+		moduleBJSX: baseDir + 'testFiles/moduleB.jsx',
+		moduleC: baseDir + 'testFiles/moduleC.js',
+		moduleD: baseDir + 'testFiles/moduleD.js'
 	};
 
 	const startOfDocument = {
@@ -98,6 +117,14 @@ suite('referenceProvider basic.js', () => {
 			expectedTarget: files.moduleB,
 			expectedRange: startOfDocument
 		},
+		moduleAJSX: {
+			expectedTarget: files.moduleAJSX,
+			expectedRange: startOfDocument
+		},
+		moduleBJSX: {
+			expectedTarget: files.moduleBJSX,
+			expectedRange: startOfDocument
+		},
 		moduleC: {
 			expectedTarget: files.moduleC,
 			expectedRange: startOfDocument
@@ -108,6 +135,10 @@ suite('referenceProvider basic.js', () => {
 		},
 		bazInA: {
 			expectedTarget: files.moduleA,
+			expectedRange: bazRange
+		},
+		bazInAJSX: {
+			expectedTarget: files.moduleAJSX,
 			expectedRange: bazRange
 		},
 		// TODO: this should be a range
@@ -141,6 +172,11 @@ suite('referenceProvider basic.js', () => {
 			// This test is failing on travis?
 			// propInB: [new Position(4, 11)],
 			bazInA: [new Position(3, 11)]
+		},
+		basicJSX: {
+			moduleAJSX: [new Position(0, 14), new Position(1, 15), new Position(3, 6)],
+			moduleBJSX: [new Position(0, 29), new Position(2, 15), new Position(4, 6)],
+			bazInAJSX: [new Position(3, 11)]
 		},
 		basicArrow: {
 			moduleA: [new Position(0, 14), new Position(1, 15), new Position(2, 5)],
