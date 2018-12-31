@@ -136,4 +136,4 @@ in your command line, assuming vscode is installed and registered in your path.
 
 The project is maintained at: [gitHub](https://github.com/anacierdem/vscode-requirejs)
 
-Support me at http://patreon.com/anacierdem
+Support this project at http://patreon.com/anacierdem
