@@ -10,4 +10,6 @@ define("moduleA", function() {
             
         }
     };
+
+    const confusingJSX = <div {() => {}}></div>
 });
