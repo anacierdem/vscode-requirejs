@@ -1,22 +1,9 @@
-const proxyquire = require('proxyquire');
-
 const assert = require('assert');
 const { workspace, Position } = require('vscode');
 
-const vscodeStub = {
-	workspace: {
-		getConfiguration: () => {
-			return {
-				get: () => ({ jsx: '.jsx' })
-			};
-		}
-	}
-};
-const { ReferenceProvider } = proxyquire('../extension', { vscode: vscodeStub });
+const { ReferenceProvider } = require('../extension');
 
 const referenceProvider = new ReferenceProvider();
-
-// vscode.workspace.getConfiguration('requireModuleSupport').get('onlyNavigateToFile') , pluginExtensions
 
 // Integration tests
 suite('referenceProvider basic.js', () => {
