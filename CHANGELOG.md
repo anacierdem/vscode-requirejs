@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.21] - 2019-01-03
+### Changed
+
+- Disabled unsafe autocompletion.
+
 ## [0.1.20] - 2018-31-12
 ### Updated
 

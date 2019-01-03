@@ -5,7 +5,6 @@ const fs = require('fs');
 const requirejs = require('requirejs');
 const amodroConfig = require('amodro-trace/config');
 const ReferenceProvider = require('./ReferenceProvider');
-const CompletionItemProvider = require('./CompletionItemProvider');
 
 // Initialize or re-initialize requirejs for the activated context.
 function initializeRequireJs () {
@@ -39,7 +38,6 @@ const language = [{ scheme: 'file', language: 'javascript' }, { scheme: 'file', 
 
 Object.assign(exports, {
 	ReferenceProvider,
-	CompletionItemProvider,
 	activate (context) {
 		initializeRequireJs();
 		context.subscriptions.push(
@@ -48,13 +46,6 @@ Object.assign(exports, {
 			vscode.languages.registerDefinitionProvider(
 				language,
 				new ReferenceProvider()
-			)
-		);
-		context.subscriptions.push(
-			vscode.languages.registerCompletionItemProvider(
-				language,
-				new CompletionItemProvider(),
-				['.']
 			)
 		);
 	}

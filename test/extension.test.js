@@ -2,13 +2,7 @@ const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const assert = require('assert');
 const registerDefinitionProviderStub = sinon.stub();
-const registerCompletionItemProviderStub = sinon.stub();
-const vscodeStub = {
-	languages: {
-		registerDefinitionProvider: registerDefinitionProviderStub,
-		registerCompletionItemProvider: registerCompletionItemProviderStub
-	}
-};
+const vscodeStub = { languages: { registerDefinitionProvider: registerDefinitionProviderStub } };
 const extension = proxyquire('../extension', { vscode: vscodeStub });
 
 suite('extension', () => {
@@ -16,14 +10,14 @@ suite('extension', () => {
 		assert.ok('activate' in extension);
 	});
 
-	test('activate should register definition provider and autocompletion', () => {
+	test('activate should register definition provider', () => {
 		const context = { subscriptions: [] };
 
 		extension.activate(context);
 
 		// Reinitializing RequireJS on configuration change
 		// and registering the RequireJS definition provider.
-		assert.equal(context.subscriptions.length, 3);
+		assert.equal(context.subscriptions.length, 2);
 
 		// This is useless!
 		assert.deepEqual(
