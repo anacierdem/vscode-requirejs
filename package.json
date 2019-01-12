@@ -12,7 +12,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:javascript"
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact"
   ],
   "main": "./extension",
   "contributes": {
