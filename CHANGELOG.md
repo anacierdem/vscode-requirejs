@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.23] - 2019-01-12
+### Changed
+
+- Fixed a bug causing developer console error.
+
 ## [0.1.21] - 2019-01-03
 ### Changed
 

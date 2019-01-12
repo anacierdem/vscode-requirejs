@@ -160,11 +160,11 @@ suite('referenceProvider basic.js', () => {
 			// propInB: [new Position(4, 11)],
 			bazInA: [new Position(3, 11)]
 		},
-		// basicJSX: {
-		// 	moduleAJSX: [new Position(0, 14), new Position(1, 15), new Position(3, 6)],
-		// 	moduleBJSX: [new Position(0, 29), new Position(2, 15), new Position(4, 6)],
-		// 	bazInAJSX: [new Position(3, 11)]
-		// },
+		basicJSX: {
+			moduleAJSX: [new Position(0, 14), new Position(1, 15), new Position(3, 6)],
+			moduleBJSX: [new Position(0, 29), new Position(2, 15), new Position(4, 6)],
+			bazInAJSX: [new Position(3, 11)]
+		},
 		basicArrow: {
 			moduleA: [new Position(0, 14), new Position(1, 15), new Position(2, 5)],
 			bazInA: [new Position(2, 9)],

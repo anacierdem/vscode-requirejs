@@ -487,8 +487,7 @@ class ReferenceProvider {
 			});
 		}
 		// No range;
-
-		return resolve(undefined);
+		return undefined;
 	}
 }
 
