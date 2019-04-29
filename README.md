@@ -146,4 +146,6 @@ in your command line, assuming vscode is installed and registered in your path.
 
 The project is maintained at: [gitHub](https://github.com/anacierdem/vscode-requirejs)
 
-Support this project at http://patreon.com/anacierdem
+If this extension helped you, consider supporting me;
+
+<a href="https://patreon.com/anacierdem"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2Fanacierdem&style=for-the-badge" /> </a>
