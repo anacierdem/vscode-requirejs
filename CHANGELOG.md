@@ -1,11 +1,16 @@
 # Change Log
 
-## [0.1.23] - 2019-01-12
+## [0.1.24] - 2019-29-04
+### Changed
+
+- Fixed extension not working when there is a trailing comma.
+
+## [0.1.23] - 2019-12-01
 ### Changed
 
 - Fixed a bug causing developer console error.
 
-## [0.1.21] - 2019-01-03
+## [0.1.21] - 2019-03-01
 ### Changed
 
 - Disabled unsafe autocompletion.
