@@ -15,6 +15,7 @@ suite('referenceProvider basic.js', () => {
 		ifStatementWithProperty: baseDir + 'testFiles/ifStatementWithProperty.js',
 		basicArrow: baseDir + 'testFiles/basicArrow.js',
 		basicMultiline: baseDir + 'testFiles/basicMultiline.js',
+		basicWithDollar: baseDir + 'testFiles/basicWithDollar.js',
 		basicMultilineWithComma: baseDir + 'testFiles/basicMultilineWithComma.js',
 		basicMultilineWithComment: baseDir + 'testFiles/basicMultilineWithComment.js',
 		immediatelyInvoked: baseDir + 'testFiles/immediatelyInvoked.js',
@@ -176,6 +177,12 @@ suite('referenceProvider basic.js', () => {
 			moduleB: [new Position(1, 15), new Position(5, 5)],
 			bazInA: [new Position(4, 10)],
 			propInB: [new Position(5, 10)]
+		},
+		basicWithDollar: {
+			moduleA: [new Position(3, 6)],
+			moduleB: [new Position(4, 6)],
+			bazInA: [new Position(3, 10)],
+			propInB: [new Position(4, 10)]
 		},
 		basicMultilineWithComma: {
 			moduleA: [new Position(1, 9), new Position(6, 5)],

@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.25] - 2019-29-04
+### Changed
+
+- Fixed extension not working when there are _ or $ in function parameters.
+
 ## [0.1.24] - 2019-29-04
 ### Changed
 

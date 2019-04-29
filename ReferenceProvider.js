@@ -45,7 +45,7 @@ class ReferenceProvider {
 	getModulesWithPathFromRequireOrDefine (str) {
 		let list, result;
 		const array = /\[[^\]]*\]/gi;
-		const params = /(?:function\s*\(([^)]*))|(?:(?:(?:\(([a-zA-Z,\s\t]*)\))|([a-zA-Z0-9]+))(?=[\s\t]*=>))/i;
+		const params = /(?:function\s*\(([^)]*))|(?:(?:(?:\(([a-zA-Z0-9$_,\s\t]*)\))|([a-zA-Z0-9$_]+))(?=[\s\t]*=>))/i;
 
 		// Remove comments, which would make JSON.parse fail. Not the optimal solution;
 		// see https://stackoverflow.com/a/15123777/623816 for more information.
