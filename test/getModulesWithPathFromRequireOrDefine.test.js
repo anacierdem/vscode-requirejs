@@ -13,6 +13,16 @@ suite('getModulesWithPathFromRequireOrDefine', () => {
 		assert.deepEqual(referenceProvider.getModulesWithPathFromRequireOrDefine(input), expected);
 	});
 
+	test('should return object with module path and name for double quotes', () => {
+		const input = 'define(["./path/to/a", \'./path/to/b\'], function (moduleA, moduleB) {';
+		const expected = {
+			moduleA: './path/to/a',
+			moduleB: './path/to/b'
+		};
+
+		assert.deepEqual(referenceProvider.getModulesWithPathFromRequireOrDefine(input), expected);
+	});
+
 	test('should return object with module path and name for multiline define', () => {
 		const input = `define([
                 'moduleA', 
