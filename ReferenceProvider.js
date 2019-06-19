@@ -54,7 +54,7 @@ class ReferenceProvider {
 		let m = array.exec(cleanedStr);
 
 		if (m) {
-			list = m[0].split(',').map((val) => val.replace(/['\s\t\r\n\[\]]/gm, ''));
+			list = m[0].split(',').map((val) => val.replace(/["'\s\t\r\n\[\]]/gm, ''));
 		}
 
 		if (!list || list.length === 0) {
