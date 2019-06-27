@@ -29,6 +29,7 @@ deploy:
     script: vsce publish -p ${VSCODE_KEY}
     on:
       branch: master
+      tags: true
 
 after_script:
   - bash <(curl -s https://codecov.io/bash)
