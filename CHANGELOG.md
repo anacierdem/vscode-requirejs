@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.1.27] - 2019-27-06
+## [0.1.28] - 2019-27-06
 ### Changed
 
 - Now supporting double quoted strings in module names.
