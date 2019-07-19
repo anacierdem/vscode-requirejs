@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.29] - 2019-19-07
+### Changed
+
+- Updated dependencies.
+
 ## [0.1.28] - 2019-27-06
 ### Changed
 
