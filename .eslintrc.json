@@ -13,7 +13,8 @@
         "ecmaFeatures": {
             "jsx": true
         },
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaVersion": 2015
     },
     "rules": {
         "indent": ["error", "tab"],
