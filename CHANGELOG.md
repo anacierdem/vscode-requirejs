@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.30] - 2019-22-07
+### Changed
+
+- Updated development dependencies.
+
 ## [0.1.29] - 2019-19-07
 ### Changed
 
