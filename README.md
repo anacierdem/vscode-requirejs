@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/anacierdem/vscode-requirejs/branch/master/graph/badge.svg)](https://codecov.io/gh/anacierdem/vscode-requirejs)
 [![dependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/status.svg)](https://david-dm.org/anacierdem/vscode-requirejs)
 [![devDependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/dev-status.svg)](https://david-dm.org/anacierdem/vscode-requirejs?type=dev)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fanacierdem%2Fvscode-requirejs.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fanacierdem%2Fvscode-requirejs?ref=badge_shield)
 
 ## Features
 
@@ -149,3 +150,7 @@ The project is maintained at: [gitHub](https://github.com/anacierdem/vscode-requ
 If this extension helped you, consider supporting its development at;
 
 <a href="https://patreon.com/anacierdem"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.herokuapp.com%2Fanacierdem&style=for-the-badge" /> </a>
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fanacierdem%2Fvscode-requirejs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fanacierdem%2Fvscode-requirejs?ref=badge_large)
