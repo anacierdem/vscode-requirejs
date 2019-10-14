@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.32] - 2019-14-10
+### Changed
+
+- Updated dependencies and tests.
+
 ## [0.1.31] - 2019-22-07
 ### Changed
 
