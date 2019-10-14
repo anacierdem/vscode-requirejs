@@ -19,7 +19,7 @@ install:
   - npm install
 
 script:
-  - npm test --silent
+  - npm test
   - npm run lint
   - npm i -g vsce
 
