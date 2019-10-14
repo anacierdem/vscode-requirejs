@@ -44,7 +44,7 @@ suite('referenceProvider basic.js', () => {
 
 	const propRange = {
 		_end: {
-			_character: 12,
+			_character: 15,
 			_line: 2
 		},
 		_start: {
@@ -66,8 +66,8 @@ suite('referenceProvider basic.js', () => {
 
 	const bazRange = {
 		_end: {
-			_character: 11,
-			_line: 8
+			_character: 9,
+			_line: 10
 		},
 		_start: {
 			_character: 8,
@@ -77,8 +77,8 @@ suite('referenceProvider basic.js', () => {
 
 	const fooRange = {
 		_end: {
-			_character: 11,
-			_line: 2
+			_character: 9,
+			_line: 4
 		},
 		_start: {
 			_character: 8,
