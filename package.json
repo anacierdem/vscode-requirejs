@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "decache": "^4.5.1",
-    "eslint": "^6.1.0",
+    "eslint": "^6.5.1",
     "goodparts": "^1.2.1",
     "istanbul": "^0.4.5",
     "mocha": "^6.2.0",
