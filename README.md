@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/anacierdem/vscode-requirejs/branch/master/graph/badge.svg)](https://codecov.io/gh/anacierdem/vscode-requirejs)
 [![dependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/status.svg)](https://david-dm.org/anacierdem/vscode-requirejs)
 [![devDependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/dev-status.svg)](https://david-dm.org/anacierdem/vscode-requirejs?type=dev)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f6350503ab8480d91dbf3477d6805ae)](https://www.codacy.com/manual/anacierdem/vscode-requirejs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=anacierdem/vscode-requirejs&amp;utm_campaign=Badge_Grade)
 
 ## Features
 
