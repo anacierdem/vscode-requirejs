@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/anacierdem/vscode-requirejs/branch/master/graph/badge.svg)](https://codecov.io/gh/anacierdem/vscode-requirejs)
 [![dependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/status.svg)](https://david-dm.org/anacierdem/vscode-requirejs)
 [![devDependencies Status](https://david-dm.org/anacierdem/vscode-requirejs/dev-status.svg)](https://david-dm.org/anacierdem/vscode-requirejs?type=dev)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f6350503ab8480d91dbf3477d6805ae)](https://www.codacy.com/manual/anacierdem/vscode-requirejs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=anacierdem/vscode-requirejs&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f6350503ab8480d91dbf3477d6805ae)](https://www.codacy.com/manual/anacierdem/vscode-requirejs?utm_source=github.com&utm_medium=referral&utm_content=anacierdem/vscode-requirejs&utm_campaign=Badge_Grade)
 
 ## Features
 
@@ -19,7 +19,7 @@ You can navigate to the source file from locations marked with the caret (^);
     require(['moduleA', 'moduleB'], function(a, b) {
                 ^           ^                ^  ^
         var foo = a;
-             ^    ^  
+             ^    ^
         var bar = b;
              ^    ^
         foo.baz();
@@ -31,16 +31,16 @@ You can navigate to the source file from locations marked with the caret (^);
     define('myName', ['moduleA', 'moduleB'], function(a, b) {
                           ^  	     ^                ^  ^
         var foo = new a();
-             ^        ^  
+             ^        ^
         foo.bar();
          ^   ^
     });
 
 ## Settings
 
-You can set module path relative to workspace root with 
+You can set module path relative to workspace root with
 
-    "requireModuleSupport.modulePath" 
+    "requireModuleSupport.modulePath"
 
 without leading and trailing slashes.
 
@@ -141,7 +141,11 @@ run;
 
     code --install-extension lici.require-js
 
-in your command line, assuming vscode is installed and registered in your path.
+in your command line, assuming vscode is installed and registered in your path. Or run;
+
+    ext install lici.require-js
+
+in command+P menu of vscode.
 
 ## Support
 
