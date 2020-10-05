@@ -1,3 +1,7 @@
+# NOT ACTIVELY MAINTAINED
+
+This started as a self-built tool when I was working on a require-based project to help with code navigation. It received some attention at that time and the community helped a lot to bring this extension to this final form. Lately, I didn't have time to work on this project. Recently, I have tried to upgrade vscode version and other tools to make it run and test like it was before, but there were too many required changes (some of which I don't even understand at times) and I decided it was not worth the effort. Being an almost dying module system, I decided to drop support for the extension. I'm not planning to remove it from the store but I know it is not working properly with new vscode versions. If someone prepares a modernized PR with a fully functional extension and tests, I'll try my best to review and merge it.
+
 # Require Module Support README
 
 [![Build Status](https://api.travis-ci.org/anacierdem/vscode-requirejs.svg?branch=master)](https://travis-ci.org/anacierdem/vscode-requirejs)
