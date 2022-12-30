@@ -62,7 +62,7 @@
     "eslint": "^6.5.1",
     "goodparts": "^1.2.1",
     "istanbul": "^0.4.5",
-    "mocha": "^6.2.0",
+    "mocha": "^10.2.0",
     "proxyquire": "^2.1.1",
     "remap-istanbul": "^0.13.0",
     "sinon": "^7.3.2",
